@@ -1,16 +1,15 @@
 package com.shamilovstas.text_encrypt.notes.repository
 
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class NotesRepository @Inject constructor(
     private val notesDao: NotesDao
 ) {
-
-
     suspend fun saveNote(entity: NoteEntity) {
         notesDao.insert(entity)
     }
-    suspend fun getAllNotes(): List<NoteEntity> {
+    fun getAllNotes(): Flow<List<NoteEntity>> {
         return notesDao.getAllNotes();
     }
 
@@ -21,5 +20,4 @@ class NotesRepository @Inject constructor(
     fun deleteNote(note: NoteEntity) {
         notesDao.delete(note)
     }
-
 }

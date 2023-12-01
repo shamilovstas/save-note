@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NotesDao {
@@ -16,7 +17,7 @@ interface NotesDao {
     fun insert(entities: List<NoteEntity>)
 
     @Query("SELECT id, content, is_published, created_date FROM notes")
-    suspend fun getAllNotes(): List<NoteEntity>
+    fun getAllNotes(): Flow<List<NoteEntity>>
 
     @Delete
     fun delete(entity: NoteEntity)

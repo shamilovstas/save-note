@@ -2,6 +2,9 @@ package com.shamilovstas.text_encrypt.notes.domain
 
 import com.shamilovstas.text_encrypt.TextEncryptor
 import com.shamilovstas.text_encrypt.notes.repository.NotesRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import java.time.OffsetDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -24,8 +27,9 @@ class NotesInteractor @Inject constructor(
         return note
     }
 
-    suspend fun getAllNotes(): List<Note> {
-        return repository.getAllNotes().map { it.toModel() }
+    suspend fun getAllNotes(): Flow<List<Note>> {
+        return repository.getAllNotes()
+            .map { it.map { it.toModel() } }
     }
 }
 

@@ -9,6 +9,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.shamilovstas.text_encrypt.ComposeNoteFragment
+import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.databinding.FragmentNoteListBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -36,6 +38,9 @@ class NotesListFragment : Fragment() {
 
     private fun initViews(binding: FragmentNoteListBinding) {
         binding.recyclerNoteList.adapter = adapter
+        binding.buttonAddNote.setOnClickListener {
+            navigateToComposeNoteScreen()
+        }
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.state.collect {
@@ -44,6 +49,13 @@ class NotesListFragment : Fragment() {
             }
         }
         viewModel.loadNotes()
+    }
+
+    private fun navigateToComposeNoteScreen() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.container, ComposeNoteFragment())
+            .addToBackStack("name")
+            .commit()
     }
 
     private fun render(state: NotesListScreenState) = with(binding!!) {

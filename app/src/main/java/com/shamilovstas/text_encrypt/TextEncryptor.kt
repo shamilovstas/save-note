@@ -33,7 +33,6 @@ class TextEncryptor @Inject constructor() {
         val salt = generateRandom(SALT_LENGTH)
         val key = generateKey(password, salt)
 
-        Log.d(TAG, "Key : ${key.encoded.toString(Charsets.UTF_8)}")
         val cipher = Cipher.getInstance(ALGORITHM)
 
         val iv = IvParameterSpec(generateRandom(IV_LENGTH))
@@ -41,7 +40,10 @@ class TextEncryptor @Inject constructor() {
         val ciphertext: ByteArray = cipher.doFinal(text.toByteArray())
 
         val message = salt + iv.iv + ciphertext
+
+        Log.d("TextEncryptor","Before:  ${message.toString(Charsets.UTF_8)}")
         val base64Encoded = Base64.encode(message)
+        Log.d("TextEncryptor","After:  $base64Encoded")
         return base64Encoded
     }
 

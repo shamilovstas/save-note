@@ -1,8 +1,6 @@
 package com.shamilovstas.text_encrypt
 
 import android.util.Log
-import java.security.NoSuchAlgorithmException
-import java.security.NoSuchProviderException
 import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.SecretKeyFactory
@@ -21,13 +19,14 @@ class TextEncryptor {
         private const val SALT_LENGTH = 20
         private const val IV_LENGTH = 16
         private const val ALGORITHM = "AES/CBC/PKCS5Padding"
-
+        private const val MIN_BLOCK_SIZE = 16
         private const val DIGEST_ALGO = "PBKDF2WithHmacSHA256"
 
     }
 
     @OptIn(ExperimentalEncodingApi::class)
     fun encrypt(text: String, password: String): String {
+        if (text.isEmpty()) throw IllegalArgumentException("Clear text cannot be empty")
         val salt = generateRandom(SALT_LENGTH)
         val key = generateKey(password, salt)
 
@@ -45,8 +44,9 @@ class TextEncryptor {
 
     @OptIn(ExperimentalEncodingApi::class)
     fun decrypt(encText: String, password: String): String {
-
         val encText2 = Base64.decode(encText)
+        checkMessageSize(encText2.size)
+
         val cipher = Cipher.getInstance(ALGORITHM)
 
         var curIndex = 0
@@ -63,6 +63,11 @@ class TextEncryptor {
         return ciphertext.toString(Charsets.UTF_8)
     }
 
+    private fun checkMessageSize(size: Int) {
+        val minSize = MIN_BLOCK_SIZE + SALT_LENGTH + IV_LENGTH
+        if (size < minSize) throw EncryptedMessageMalformed(size, minSize)
+    }
+
     private fun generateKey(
         password: String,
         salt: ByteArray
@@ -75,10 +80,13 @@ class TextEncryptor {
         return key
     }
 
-    fun generateRandom(len: Int): ByteArray {
+    private fun generateRandom(len: Int): ByteArray {
         val random = SecureRandom()
         val rnd = ByteArray(len)
         random.nextBytes(rnd)
         return rnd
     }
 }
+
+class EncryptedMessageMalformed(messageLength: Int, minLength: Int) :
+    Exception("The encrypted message was malformed, message length $messageLength < $minLength")

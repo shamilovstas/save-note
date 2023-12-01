@@ -23,6 +23,10 @@ class NotesInteractor @Inject constructor(
         repository.saveNote(entity)
         return note
     }
+
+    suspend fun getAllNotes(): List<Note> {
+        return repository.getAllNotes().map { it.toModel() }
+    }
 }
 
 class ClearTextIsEmpty : IllegalArgumentException("Clear text is empty")

@@ -10,7 +10,7 @@ class NotesRepository @Inject constructor(
     suspend fun saveNote(entity: NoteEntity) {
         notesDao.insert(entity)
     }
-    fun getAllNotes(): List<NoteEntity> {
+    suspend fun getAllNotes(): List<NoteEntity> {
         return notesDao.getAllNotes();
     }
 

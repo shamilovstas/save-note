@@ -16,7 +16,7 @@ interface NotesDao {
     fun insert(entities: List<NoteEntity>)
 
     @Query("SELECT id, content, is_published, created_date FROM notes")
-    fun getAllNotes(): List<NoteEntity>
+    suspend fun getAllNotes(): List<NoteEntity>
 
     @Delete
     fun delete(entity: NoteEntity)

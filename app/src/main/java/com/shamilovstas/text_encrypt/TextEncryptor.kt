@@ -7,13 +7,16 @@ import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 
 private const val TAG = "TextEncryptor"
 
-class TextEncryptor {
+@Singleton
+class TextEncryptor @Inject constructor() {
 
     companion object {
         private const val SALT_LENGTH = 20

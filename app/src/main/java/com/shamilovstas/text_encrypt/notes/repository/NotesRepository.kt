@@ -1,6 +1,8 @@
 package com.shamilovstas.text_encrypt.notes.repository
 
-class NotesRepository(
+import javax.inject.Inject
+
+class NotesRepository @Inject constructor(
     private val notesDao: NotesDao
 ) {
 

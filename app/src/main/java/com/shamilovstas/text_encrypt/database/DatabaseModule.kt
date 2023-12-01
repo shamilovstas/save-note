@@ -11,18 +11,15 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface DatabaseModule {
+class DatabaseModule {
 
-    companion object {
-        @Provides
-        fun provideDatabase(context: Context): AppDatabase {
-            return Room.databaseBuilder(context, AppDatabase::class.java, "app.db").build()
-        }
+    @Provides
+    fun provideDatabase(context: Context): AppDatabase {
+        return Room.databaseBuilder(context, AppDatabase::class.java, "app.db").build()
     }
 
-    @Binds
+    @Provides
     fun bindNotesDao(appDatabase: AppDatabase): NotesDao {
         return appDatabase.notesDao()
     }
-
 }

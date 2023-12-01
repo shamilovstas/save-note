@@ -2,10 +2,9 @@ package com.shamilovstas.text_encrypt
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import com.shamilovstas.text_encrypt.databinding.ActivityMainBinding
-import kotlin.io.encoding.Base64
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -13,7 +12,7 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_main)
         supportFragmentManager.beginTransaction()
-            .replace(R.id.container, MainFragment())
+            .replace(R.id.container, ComposeNoteFragment())
             .commit()
     }
 }

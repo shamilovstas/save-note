@@ -8,4 +8,6 @@
     <string name="password_dialog_message">In order to decrypt or encrypt a message, you must provide a password</string>
     <string name="error_password_empty">Password cannot be empty</string>
     <string name="error_password_do_not_match">Passwords do not match</string>
+    <string name="message_is_empty">Message is empty</string>
+    <string name="btn_process">Process</string>
 </resources>

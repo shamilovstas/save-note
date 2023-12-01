@@ -49,9 +49,8 @@ class TextEncryptor {
 
         val cipher = Cipher.getInstance(ALGORITHM)
 
-        var curIndex = 0
         val salt = encText2.slice(0 until SALT_LENGTH).toByteArray()
-        curIndex = SALT_LENGTH
+        var curIndex: Int = SALT_LENGTH
         val ivBytes = encText2.slice(curIndex until curIndex + IV_LENGTH).toByteArray()
         curIndex += IV_LENGTH
         val key = generateKey(password, salt)

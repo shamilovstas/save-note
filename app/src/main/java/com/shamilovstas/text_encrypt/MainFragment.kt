@@ -24,7 +24,7 @@ class MainFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        childFragmentManager.setFragmentResultListener(PasswordDialog.REQUEST_PASSWORD_FRAGMENT, this) { key, bundle ->
+        childFragmentManager.setFragmentResultListener(PasswordDialog.REQUEST_PASSWORD_FRAGMENT, this) { _, bundle ->
             val password = bundle.getString(PasswordDialog.BUNDLE_PASSWORD_RESULT)
                 ?: throw IllegalStateException("Password cannot be null")
             Log.d("TextEncryptor", "Password: $password")

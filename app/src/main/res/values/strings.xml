@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Text-encrypt</string>
+    <string name="enter_password">Password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="title_enter_password">Enter password</string>
+    <string name="password_dialog_cancel">Cancel</string>
+    <string name="password_dialog_confirm">Ok</string>
+    <string name="password_dialog_message">In order to decrypt or encrypt a message, you must provide a password</string>
+    <string name="error_password_empty">Password cannot be empty</string>
+    <string name="error_password_do_not_match">Passwords do not match</string>
 </resources>

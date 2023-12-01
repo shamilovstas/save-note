@@ -10,4 +10,5 @@
     <string name="error_password_do_not_match">Passwords do not match</string>
     <string name="message_is_empty">Message is empty</string>
     <string name="btn_process">Process</string>
+    <string name="note_created">Note created</string>
 </resources>

@@ -10,7 +10,10 @@ import androidx.room.Update
 @Dao
 interface NotesDao {
     @Insert(onConflict = REPLACE)
-    fun insert(vararg entities: NoteEntity)
+    suspend fun insert(entity: NoteEntity)
+
+    @Insert(onConflict = REPLACE)
+    fun insert(entities: List<NoteEntity>)
 
     @Query("SELECT id, content, is_published, created_date FROM notes")
     fun getAllNotes(): List<NoteEntity>

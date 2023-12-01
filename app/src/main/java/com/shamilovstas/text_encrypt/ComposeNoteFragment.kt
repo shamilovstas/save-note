@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -13,9 +14,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
 import com.google.android.material.snackbar.Snackbar
 import com.shamilovstas.text_encrypt.databinding.FragmentMainBinding
-import com.shamilovstas.text_encrypt.notes.encrypt.CryptoFeatureError
-import com.shamilovstas.text_encrypt.notes.encrypt.EncryptScreenState
-import com.shamilovstas.text_encrypt.notes.encrypt.ComposeNoteViewModel
+import com.shamilovstas.text_encrypt.notes.compose.CryptoFeatureError
+import com.shamilovstas.text_encrypt.notes.compose.EncryptScreenState
+import com.shamilovstas.text_encrypt.notes.compose.ComposeNoteViewModel
+import com.shamilovstas.text_encrypt.notes.compose.ComposeScreenEffect
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -33,7 +35,6 @@ class ComposeNoteFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initViews()
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,11 +56,30 @@ class ComposeNoteFragment : Fragment() {
             PasswordDialog().show(childFragmentManager, "password_dialog")
         }
 
+        binding?.editText?.doAfterTextChanged {
+            viewModel.onTextChange()
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.state.collect {
                     render(it)
                 }
+            }
+
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.effects.collect {
+                    effect(it)
+                }
+            }
+        }
+    }
+
+    private fun effect(it: ComposeScreenEffect) {
+        when (it) {
+            is ComposeScreenEffect.ComposeComplete -> {
+                Snackbar.make(binding!!.root, getString(R.string.note_created), Snackbar.LENGTH_SHORT).show()
+                //finish()
             }
         }
     }

@@ -11,7 +11,7 @@ import com.shamilovstas.text_encrypt.databinding.ItemNoteBinding
 import com.shamilovstas.text_encrypt.notes.DATE_FORMATTER
 import com.shamilovstas.text_encrypt.notes.domain.Note
 
-class NotesAdapter : ListAdapter<Note, NotesAdapter.NoteViewHolder>(
+class NotesAdapter(private val onClickListener: (Note) -> Unit = {}) : ListAdapter<Note, NotesAdapter.NoteViewHolder>(
     DIFF_CALLBACK
 ) {
     companion object {
@@ -28,7 +28,16 @@ class NotesAdapter : ListAdapter<Note, NotesAdapter.NoteViewHolder>(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val binding = ItemNoteBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return NoteViewHolder(binding)
+
+        val noteViewHolder = NoteViewHolder(binding)
+        binding.root.setOnClickListener {
+            val position = noteViewHolder.adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                val data = getItem(position)
+                onClickListener.invoke(data)
+            }
+        }
+        return noteViewHolder
     }
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {

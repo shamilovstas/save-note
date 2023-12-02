@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.shamilovstas.text_encrypt.ComposeNoteFragment
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.databinding.FragmentNoteListBinding
@@ -52,10 +53,7 @@ class NotesListFragment : Fragment() {
     }
 
     private fun navigateToComposeNoteScreen() {
-        parentFragmentManager.beginTransaction()
-            .replace(R.id.container, ComposeNoteFragment())
-            .addToBackStack("name")
-            .commit()
+        findNavController().navigate(R.id.action_from_list_to_compose)
     }
 
     private fun render(state: NotesListScreenState) = with(binding!!) {

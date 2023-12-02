@@ -13,11 +13,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
 import com.google.android.material.snackbar.Snackbar
-import com.shamilovstas.text_encrypt.databinding.FragmentMainBinding
-import com.shamilovstas.text_encrypt.notes.compose.CryptoFeatureError
-import com.shamilovstas.text_encrypt.notes.compose.EncryptScreenState
+import com.shamilovstas.text_encrypt.databinding.FragmentComposeNoteBinding
 import com.shamilovstas.text_encrypt.notes.compose.ComposeNoteViewModel
 import com.shamilovstas.text_encrypt.notes.compose.ComposeScreenEffect
+import com.shamilovstas.text_encrypt.notes.compose.CryptoFeatureError
+import com.shamilovstas.text_encrypt.notes.compose.EncryptScreenState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -27,9 +27,9 @@ class ComposeNoteFragment : Fragment() {
 
     private val viewModel by viewModels<ComposeNoteViewModel>()
 
-    private var binding: FragmentMainBinding? = null
+    private var binding: FragmentComposeNoteBinding? = null
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        binding = FragmentMainBinding.inflate(inflater, container, false)
+        binding = FragmentComposeNoteBinding.inflate(inflater, container, false)
         return binding!!.root
     }
 

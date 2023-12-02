@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -22,7 +23,10 @@ class NotesListFragment : Fragment() {
 
     private val viewModel by viewModels<NotesListViewModel>()
     private var binding: FragmentNoteListBinding? = null
-    private val adapter = NotesAdapter()
+    private val adapter = NotesAdapter {
+        findNavController().navigate(R.id.action_from_list_to_compose, bundleOf("note_id" to it.id))
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentNoteListBinding.inflate(inflater, container, false)
         return binding!!.root

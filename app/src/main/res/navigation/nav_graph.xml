@@ -13,11 +13,20 @@
 
         <action
             android:id="@+id/action_from_list_to_compose"
-            app:destination="@id/compose_note_fragment" />
+            app:destination="@id/compose_note_fragment" >
+            <argument
+                android:name="note_id"
+                android:defaultValue="0" />
+        </action>
     </fragment>
 
     <fragment
         android:id="@+id/compose_note_fragment"
         tools:layout="@layout/fragment_compose_note"
-        android:name="com.shamilovstas.text_encrypt.ComposeNoteFragment" />
+        android:name="com.shamilovstas.text_encrypt.ComposeNoteFragment" >
+        <argument
+            android:name="note_id"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
 </navigation>

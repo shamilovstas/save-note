@@ -20,4 +20,8 @@ class NotesRepository @Inject constructor(
     fun deleteNote(note: NoteEntity) {
         notesDao.delete(note)
     }
+
+    suspend fun getNoteById(noteId: Int): NoteEntity {
+        return notesDao.getNoteById(noteId)
+    }
 }

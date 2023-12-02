@@ -5,9 +5,9 @@ import java.time.OffsetDateTime
 
 data class Note(
     val id: Int = 0,
-    val content: String,
+    val content: String = "",
     val isPublished: Boolean = false,
-    val createdDate: OffsetDateTime
+    val createdDate: OffsetDateTime = OffsetDateTime.now()
 )
 
 fun NoteEntity.toModel(): Note {

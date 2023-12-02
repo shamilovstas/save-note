@@ -24,4 +24,7 @@ interface NotesDao {
 
     @Update
     fun update(entity: NoteEntity)
+
+    @Query("SELECT id, content, is_published, created_date FROM notes WHERE id=:noteId")
+    fun getNoteById(noteId: Int): NoteEntity
 }

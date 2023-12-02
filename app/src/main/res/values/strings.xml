@@ -10,6 +10,9 @@
     <string name="error_password_do_not_match">Passwords do not match</string>
     <string name="message_is_empty">Message is empty</string>
     <string name="btn_process">Process</string>
-    <string name="note_created">Note created</string>
+    <string name="note_saved">Note saved</string>
     <string name="note_attachments_count">%d</string>
+    <string name="action_decrypt">Decrypt</string>
+    <string name="action_encrypt">Encrypt</string>
+    <string name="action_save">Save</string>
 </resources>

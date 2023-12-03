@@ -63,6 +63,8 @@ class NotesAdapter(
             when (menuItem.itemId) {
                 R.id.share_note -> onShareClickListener.invoke(item)
                 R.id.delete_note -> onDeleteClickListener.invoke(item)
+                R.id.copy_note -> onCopyClickListener.invoke(item)
+                else -> throw IllegalStateException("Handler for this option is missing")
             }
             return@setOnMenuItemClickListener true
         }

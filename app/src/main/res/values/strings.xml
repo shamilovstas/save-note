@@ -22,4 +22,5 @@
     <string name="menu_note_share">Share</string>
     <string name="menu_note_delete">Delete</string>
     <string name="menu_note_copy">Copy</string>
+    <string name="message_note_text_copied">Note text has been copied</string>
 </resources>

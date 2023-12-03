@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.shamilovstas.text_encrypt.ComposeNoteFragment
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.databinding.FragmentNoteListBinding
@@ -58,8 +59,9 @@ class NotesListFragment : Fragment() {
     }
 
     private fun onClickCopyNote(item: Note) {
-        TODO()
+        viewModel.copyNote(requireContext(), item)
     }
+
     private fun initViews(binding: FragmentNoteListBinding) {
         binding.recyclerNoteList.adapter = adapter
         binding.buttonAddNote.setOnClickListener {
@@ -72,7 +74,20 @@ class NotesListFragment : Fragment() {
                 }
             }
         }
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.effect.collect {
+                    effect(it)
+                }
+            }
+        }
         viewModel.loadNotes()
+    }
+
+    private fun effect(effects: NotesListEffects) = when(effects) {
+        is NotesListEffects.NoteContentCopied -> {
+            Snackbar.make(binding!!.root, getString(R.string.message_note_text_copied), Snackbar.LENGTH_SHORT).show()
+        }
     }
 
     private fun navigateToComposeNoteScreen() {

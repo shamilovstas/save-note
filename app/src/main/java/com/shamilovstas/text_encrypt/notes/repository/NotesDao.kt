@@ -16,7 +16,7 @@ interface NotesDao {
     @Insert(onConflict = REPLACE)
     fun insert(entities: List<NoteEntity>)
 
-    @Query("SELECT id, content, is_published, created_date FROM notes")
+    @Query("SELECT id, content, is_published, created_date FROM notes ORDER BY created_date DESC")
     fun getAllNotes(): Flow<List<NoteEntity>>
 
     @Delete

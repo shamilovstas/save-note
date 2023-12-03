@@ -16,6 +16,8 @@
         <ImageView
             android:id="@+id/menu_note"
             android:layout_width="wrap_content"
+            android:clickable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_height="wrap_content"
             android:src="@drawable/more_vert"
             app:layout_constraintBottom_toBottomOf="@id/note_create_date"

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/share_note"
+        android:icon="@drawable/share"
+        android:title="@string/menu_note_share"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/copy_note"
+        android:icon="@drawable/copy"
+        android:title="@string/menu_note_copy"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/delete_note"
+        android:icon="@drawable/delete"
+        android:title="@string/menu_note_delete"
+        app:showAsAction="ifRoom" />
+</menu>

@@ -45,6 +45,11 @@ class NotesInteractor @Inject constructor(
         return repository.getAllNotes()
             .map { it.map { it.toModel() } }
     }
+
+    suspend fun deleteNote(note: Note) {
+        val entity = note.toEntity()
+        repository.deleteNote(entity)
+    }
 }
 
 class ClearTextIsEmpty : IllegalArgumentException("Clear text is empty")

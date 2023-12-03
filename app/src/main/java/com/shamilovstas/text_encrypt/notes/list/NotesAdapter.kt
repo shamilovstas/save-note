@@ -1,8 +1,10 @@
 package com.shamilovstas.text_encrypt.notes.list
 
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -12,7 +14,11 @@ import com.shamilovstas.text_encrypt.databinding.ItemNoteBinding
 import com.shamilovstas.text_encrypt.notes.DATE_FORMATTER
 import com.shamilovstas.text_encrypt.notes.domain.Note
 
-class NotesAdapter(private val onClickListener: (Note) -> Unit = {}) : ListAdapter<Note, NotesAdapter.NoteViewHolder>(
+class NotesAdapter(
+    private val onClickListener: (Note) -> Unit = {},
+    private val onDeleteClickListener: (Note) -> Unit = {},
+    private val onShareClickListener: (Note) -> Unit = {},
+    private val onCopyClickListener: (Note) -> Unit = {}) : ListAdapter<Note, NotesAdapter.NoteViewHolder>(
     DIFF_CALLBACK
 ) {
     companion object {
@@ -38,7 +44,29 @@ class NotesAdapter(private val onClickListener: (Note) -> Unit = {}) : ListAdapt
                 onClickListener.invoke(data)
             }
         }
+
+        binding.menuNote.setOnClickListener {
+            val position = noteViewHolder.adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                val data = getItem(position)
+                showMenu(binding.menuNote, data)
+            }
+        }
         return noteViewHolder
+    }
+
+    private fun showMenu(v: View, item: Note) {
+        val popup = PopupMenu(v.context, v)
+        popup.menuInflater.inflate(R.menu.item_note_popup_menu, popup.menu)
+
+        popup.setOnMenuItemClickListener { menuItem: MenuItem ->
+            when (menuItem.itemId) {
+                R.id.share_note -> onShareClickListener.invoke(item)
+                R.id.delete_note -> onDeleteClickListener.invoke(item)
+            }
+            return@setOnMenuItemClickListener true
+        }
+        popup.show()
     }
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {

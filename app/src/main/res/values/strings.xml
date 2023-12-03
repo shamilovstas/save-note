@@ -19,4 +19,7 @@
     <string name="use_initial_password">Use initial password</string>
     <string name="description_field_helper">Description</string>
     <string name="optional_field">Optional</string>
+    <string name="menu_note_share">Share</string>
+    <string name="menu_note_delete">Delete</string>
+    <string name="menu_note_copy">Copy</string>
 </resources>

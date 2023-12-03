@@ -14,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.shamilovstas.text_encrypt.ComposeNoteFragment
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.databinding.FragmentNoteListBinding
+import com.shamilovstas.text_encrypt.notes.domain.Note
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -23,9 +24,12 @@ class NotesListFragment : Fragment() {
 
     private val viewModel by viewModels<NotesListViewModel>()
     private var binding: FragmentNoteListBinding? = null
-    private val adapter = NotesAdapter {
-        findNavController().navigate(R.id.action_from_list_to_compose, bundleOf("note_id" to it.id))
-    }
+    private val adapter = NotesAdapter(
+        onClickListener = ::onClickNoteItem,
+        onDeleteClickListener = ::onClickDeleteNoteItem,
+        onShareClickListener = ::onClickShareNoteItem,
+        onCopyClickListener = ::onClickCopyNote
+    )
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         binding = FragmentNoteListBinding.inflate(inflater, container, false)
@@ -41,6 +45,21 @@ class NotesListFragment : Fragment() {
         super.onDestroyView()
     }
 
+    private fun onClickNoteItem(note: Note) {
+        findNavController().navigate(R.id.action_from_list_to_compose, bundleOf("note_id" to note.id))
+    }
+
+    private fun onClickDeleteNoteItem(item: Note) {
+        viewModel.deleteNote(item)
+    }
+
+    private fun onClickShareNoteItem(item: Note) {
+        TODO()
+    }
+
+    private fun onClickCopyNote(item: Note) {
+        TODO()
+    }
     private fun initViews(binding: FragmentNoteListBinding) {
         binding.recyclerNoteList.adapter = adapter
         binding.buttonAddNote.setOnClickListener {

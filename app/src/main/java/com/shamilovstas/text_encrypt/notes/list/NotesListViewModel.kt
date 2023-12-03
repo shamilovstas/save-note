@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,6 +26,12 @@ class NotesListViewModel @Inject constructor(
         val flow = interactor.getAllNotes()
         flow.flowOn(Dispatchers.IO).collect {
             _state.value = _state.value.copy(notes = it)
+        }
+    }
+
+    fun deleteNote(item: Note) = viewModelScope.launch {
+        withContext(Dispatchers.IO) {
+            interactor.deleteNote(item)
         }
     }
 

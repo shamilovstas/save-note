@@ -66,8 +66,8 @@ class ComposeNoteViewModel @Inject constructor(
         _effects.emit(ComposeScreenEffect.RequestPassword(state.value.previousPassword))
     }
 
-    fun saveNote(text: String) = viewModelScope.launch {
-        val note = state.value.note.copy(content = text)
+    fun saveNote(text: String, description: String) = viewModelScope.launch {
+        val note = state.value.note.copy(content = text, description = description)
         _state.value = _state.value.copy(note = note)
         _effects.emit(ComposeScreenEffect.RequestPassword(state.value.previousPassword))
     }
@@ -89,8 +89,8 @@ sealed class ComposeScreenEffect {
     data class ComposeComplete(val data: Note) : ComposeScreenEffect()
     data object ComposeCancelled : ComposeScreenEffect()
     data class RequestPassword(val previousPassword: String? = null) : ComposeScreenEffect()
-    data object WrongPassword: ComposeScreenEffect()
-    data object TextIsEmpty: ComposeScreenEffect()
+    data object WrongPassword : ComposeScreenEffect()
+    data object TextIsEmpty : ComposeScreenEffect()
 }
 
 enum class ComposeScreenState {

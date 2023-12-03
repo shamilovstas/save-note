@@ -48,11 +48,13 @@ class ComposeNoteFragment : Fragment() {
         }
     }
 
-    private fun initViews() {
-        binding?.saveButton?.setOnClickListener {
-            viewModel.saveNote(binding!!.editText.text.toString())
+    private fun initViews() = with(binding!!) {
+        saveButton.setOnClickListener {
+            val text = editText.text?.toString() ?: ""
+            val description = descriptionEditText.text?.toString() ?: ""
+            viewModel.saveNote(text, description)
         }
-        binding?.editText?.doAfterTextChanged {
+        editText.doAfterTextChanged {
             viewModel.onTextChange()
         }
 
@@ -93,11 +95,13 @@ class ComposeNoteFragment : Fragment() {
             is ComposeScreenEffect.ComposeCancelled -> {
                 findNavController().navigateUp()
             }
+
             is ComposeScreenEffect.TextIsEmpty -> {
                 Snackbar.make(binding!!.root, R.string.message_is_empty, Snackbar.LENGTH_SHORT)
                     .setIcon(R.drawable.error, com.google.android.material.R.color.design_default_color_error)
                     .show()
             }
+
             is ComposeScreenEffect.WrongPassword -> {
                 Snackbar.make(binding!!.root, R.string.wrong_password, Snackbar.LENGTH_SHORT)
                     .show()
@@ -126,8 +130,12 @@ class ComposeNoteFragment : Fragment() {
             saveButton.text = getString(R.string.action_save)
         }
 
-        if (editText.text.toString() != state.note.content) {
+        if (editText.text?.toString() != state.note.content) {
             editText.setText(state.note.content)
+        }
+
+        if (descriptionEditText.text?.toString() != state.note.description) {
+            descriptionEditText.setText(state.note.description)
         }
     }
 }

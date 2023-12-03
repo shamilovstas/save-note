@@ -17,5 +17,8 @@ data class NoteEntity(
     val isPublished: Boolean,
 
     @ColumnInfo(name = "created_date")
-    val createdDate: OffsetDateTime
+    val createdDate: OffsetDateTime,
+
+    @ColumnInfo(name = "description")
+    val description: String
 )

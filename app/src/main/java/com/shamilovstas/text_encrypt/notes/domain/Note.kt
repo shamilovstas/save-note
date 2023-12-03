@@ -7,7 +7,8 @@ data class Note(
     val id: Int = 0,
     val content: String = "",
     val isPublished: Boolean = false,
-    val createdDate: OffsetDateTime? = null
+    val createdDate: OffsetDateTime? = null,
+    val description: String = ""
 )
 
 fun NoteEntity.toModel(): Note {
@@ -15,7 +16,8 @@ fun NoteEntity.toModel(): Note {
         id = id,
         content = content,
         isPublished = isPublished,
-        createdDate = createdDate
+        createdDate = createdDate,
+        description = description
     )
 }
 
@@ -24,6 +26,7 @@ fun Note.toEntity(): NoteEntity {
         id = id,
         content = content,
         isPublished = isPublished,
-        createdDate = requireNotNull(createdDate)
+        createdDate = requireNotNull(createdDate),
+        description = description
     )
 }

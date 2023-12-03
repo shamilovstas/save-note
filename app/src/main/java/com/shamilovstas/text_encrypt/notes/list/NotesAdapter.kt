@@ -1,6 +1,7 @@
 package com.shamilovstas.text_encrypt.notes.list
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
@@ -56,6 +57,10 @@ class NotesAdapter(private val onClickListener: (Note) -> Unit = {}) : ListAdapt
             }
             binding.ivPublished.setImageDrawable(ContextCompat.getDrawable(binding.root.context, publishedIconRes))
             binding.tvAttachmentsCount.text = itemView.context.getString(R.string.note_attachments_count, 25) // TODO change to actual attachments count
+            if (note.description.isNotEmpty()) {
+                binding.tvNoteDescription.visibility = View.VISIBLE
+                binding.tvNoteDescription.text = note.description
+            }
         }
     }
 }

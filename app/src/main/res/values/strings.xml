@@ -17,4 +17,6 @@
     <string name="action_save">Save</string>
     <string name="wrong_password">Wrong password</string>
     <string name="use_initial_password">Use initial password</string>
+    <string name="description_field_helper">Description</string>
+    <string name="optional_field">Optional</string>
 </resources>

@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:foreground="?attr/selectableItemBackground"
     android:layout_height="wrap_content"
     android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp">
+    android:layout_marginBottom="4dp"
+    android:foreground="?attr/selectableItemBackground">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -43,7 +43,41 @@
             android:maxHeight="120dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/note_create_date" />
+            app:layout_constraintTop_toBottomOf="@id/note_create_date"
+            tools:text="a,jsdfngkjLsdnfmsdSM,ANDF,MBNASDKLFGJSLKdfjasfbmnafklnSLDKGJslfjgnaLSKFng" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/note_content_divider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/encrypted_content" />
+
+        <TextView
+            android:id="@+id/tv_note_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="sans-serif-light"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:textSize="16sp"
+            app:layout_constraintHorizontal_bias="0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/note_content_divider"
+            tools:text="Descrition: asdk;oagjmaskdgmsdkgm" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/note_content_barrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="note_content_divider, tv_note_description" />
+
 
         <TextView
             android:id="@+id/tv_attachments_count"
@@ -54,7 +88,7 @@
             android:gravity="center_vertical"
             app:drawableStartCompat="@drawable/attach_file"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/encrypted_content"
+            app:layout_constraintTop_toBottomOf="@id/note_content_barrier"
             tools:text="12" />
 
 

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.crypto.BadPaddingException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,7 +33,7 @@ class ComposeNoteViewModel @Inject constructor(
             }
             _effects.emit(ComposeScreenEffect.ComposeComplete(newNote))
         } catch (e: ClearTextIsEmpty) {
-            _state.value = _state.value.copy(note = note.copy(content = ""), error = CryptoFeatureError.TextIsEmpty)
+            _effects.emit(ComposeScreenEffect.TextIsEmpty)
         }
     }
 
@@ -40,6 +41,7 @@ class ComposeNoteViewModel @Inject constructor(
         val currentState = state.value.state
         val note = state.value.note
         if (currentState == ComposeScreenState.Encrypted) {
+            _state.value = _state.value.copy(previousPassword = password)
             decrypt(note, password)
         } else {
             encrypt(note, password)
@@ -47,24 +49,27 @@ class ComposeNoteViewModel @Inject constructor(
     }
 
     private fun decrypt(note: Note, password: String) = viewModelScope.launch {
-        val decryptedNote = interactor.decrypt(note, password)
-        _state.value = state.value.copy(note = decryptedNote, state = ComposeScreenState.Clear)
+        try {
+            val decryptedNote = interactor.decrypt(note, password)
+            _state.value = state.value.copy(note = decryptedNote, state = ComposeScreenState.Clear)
+        } catch (e: BadPaddingException) {
+            _effects.emit(ComposeScreenEffect.WrongPassword)
+        }
     }
 
     fun onTextChange() {
-        _state.value = _state.value.copy(error = CryptoFeatureError.Clear)
     }
 
     fun loadNote(noteId: Int) = viewModelScope.launch {
         val note = withContext(Dispatchers.IO) { interactor.getNote(noteId) }
         _state.value = _state.value.copy(note = note, state = ComposeScreenState.Encrypted)
-        _effects.emit(ComposeScreenEffect.RequestPassword)
+        _effects.emit(ComposeScreenEffect.RequestPassword(state.value.previousPassword))
     }
 
     fun saveNote(text: String) = viewModelScope.launch {
         val note = state.value.note.copy(content = text)
-        _state.value = _state.value.copy(note = note, state = ComposeScreenState.Clear)
-        _effects.emit(ComposeScreenEffect.RequestPassword)
+        _state.value = _state.value.copy(note = note)
+        _effects.emit(ComposeScreenEffect.RequestPassword(state.value.previousPassword))
     }
 
     fun onPasswordDialogDismissed() = viewModelScope.launch {
@@ -77,18 +82,15 @@ class ComposeNoteViewModel @Inject constructor(
 data class EncryptScreenState(
     val note: Note = Note(),
     val state: ComposeScreenState = ComposeScreenState.Clear,
-    val error: CryptoFeatureError = CryptoFeatureError.Clear
+    val previousPassword: String? = null
 )
 
 sealed class ComposeScreenEffect {
     data class ComposeComplete(val data: Note) : ComposeScreenEffect()
     data object ComposeCancelled : ComposeScreenEffect()
-    data object RequestPassword : ComposeScreenEffect()
-}
-
-sealed class CryptoFeatureError {
-    data object Clear : CryptoFeatureError()
-    data object TextIsEmpty : CryptoFeatureError()
+    data class RequestPassword(val previousPassword: String? = null) : ComposeScreenEffect()
+    data object WrongPassword: ComposeScreenEffect()
+    data object TextIsEmpty: ComposeScreenEffect()
 }
 
 enum class ComposeScreenState {

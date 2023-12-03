@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,7 +19,6 @@ import com.shamilovstas.text_encrypt.databinding.FragmentComposeNoteBinding
 import com.shamilovstas.text_encrypt.notes.compose.ComposeNoteViewModel
 import com.shamilovstas.text_encrypt.notes.compose.ComposeScreenEffect
 import com.shamilovstas.text_encrypt.notes.compose.ComposeScreenState
-import com.shamilovstas.text_encrypt.notes.compose.CryptoFeatureError
 import com.shamilovstas.text_encrypt.notes.compose.EncryptScreenState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -85,12 +85,24 @@ class ComposeNoteFragment : Fragment() {
                 childFragmentManager.setFragmentResultListener(PasswordDialog.REQUEST_PASSWORD_FRAGMENT, this) { _, bundle ->
                     onPasswordDialogResult(bundle)
                 }
-                PasswordDialog().show(childFragmentManager, "password_dialog")
+                val dialog = PasswordDialog()
+                dialog.arguments = bundleOf(PasswordDialog.PREVIOUS_PASSWORD to it.previousPassword)
+                dialog.show(childFragmentManager, "password_dialog")
             }
 
             is ComposeScreenEffect.ComposeCancelled -> {
                 findNavController().navigateUp()
             }
+            is ComposeScreenEffect.TextIsEmpty -> {
+                Snackbar.make(binding!!.root, R.string.message_is_empty, Snackbar.LENGTH_SHORT)
+                    .setIcon(R.drawable.error, com.google.android.material.R.color.design_default_color_error)
+                    .show()
+            }
+            is ComposeScreenEffect.WrongPassword -> {
+                Snackbar.make(binding!!.root, R.string.wrong_password, Snackbar.LENGTH_SHORT)
+                    .show()
+            }
+
         }
     }
 
@@ -108,10 +120,6 @@ class ComposeNoteFragment : Fragment() {
 
 
     private fun render(state: EncryptScreenState) = with(binding!!) {
-        if (state.error != CryptoFeatureError.Clear) {
-            showError(state.error)
-        }
-
         if (state.state == ComposeScreenState.Encrypted) {
             saveButton.text = getString(R.string.action_decrypt)
         } else {
@@ -121,14 +129,5 @@ class ComposeNoteFragment : Fragment() {
         if (editText.text.toString() != state.note.content) {
             editText.setText(state.note.content)
         }
-    }
-
-    private fun showError(error: CryptoFeatureError) {
-        val messageRes: Int
-        when (error) {
-            is CryptoFeatureError.TextIsEmpty -> messageRes = R.string.message_is_empty
-            else -> return
-        }
-        Snackbar.make(binding!!.root, messageRes, LENGTH_SHORT).show()
     }
 }

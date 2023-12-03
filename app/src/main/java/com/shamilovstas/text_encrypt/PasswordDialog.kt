@@ -16,6 +16,7 @@ class PasswordDialog : DialogFragment() {
 
     companion object {
         const val REQUEST_PASSWORD_FRAGMENT = "req_password_fragment"
+        const val PREVIOUS_PASSWORD = "previous_password"
     }
 
     private var binding: DialogPasswordBinding? = null
@@ -25,11 +26,28 @@ class PasswordDialog : DialogFragment() {
         return binding!!.root
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val previousPassword = arguments?.getString(PREVIOUS_PASSWORD, null)
 
         binding?.let { binding ->
 
+            if (previousPassword != null) {
+                binding.cbUseInitialPassword.visibility = View.VISIBLE
+                binding.cbUseInitialPassword.setOnCheckedChangeListener { _, isChecked ->
+                    if (isChecked) {
+                        binding.etPassword.setText(previousPassword)
+                        binding.etPasswordConfirm.setText(previousPassword)
+                    } else {
+                        binding.etPassword.text?.clear()
+                        binding.etPasswordConfirm.text?.clear()
+                    }
+                }
+            }
             val editTextAction: (Editable?) -> Unit = {
                 binding.tvPasswordDialogError.visibility = View.GONE
             }

@@ -15,4 +15,6 @@
     <string name="action_decrypt">Decrypt</string>
     <string name="action_encrypt">Encrypt</string>
     <string name="action_save">Save</string>
+    <string name="wrong_password">Wrong password</string>
+    <string name="use_initial_password">Use initial password</string>
 </resources>

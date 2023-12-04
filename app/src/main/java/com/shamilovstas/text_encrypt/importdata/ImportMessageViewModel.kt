@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.crypto.BadPaddingException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,10 +24,16 @@ class ImportMessageViewModel @Inject constructor(
     private val _state = MutableStateFlow(ImportMessageScreenState())
     val state: StateFlow<ImportMessageScreenState> = _state
 
-    fun onPasswordEntered(password: String) {
+    fun onPasswordEntered(password: String) = viewModelScope.launch {
         val note = Note(content = state.value.encryptedContent)
-        val decrypted = interactor.decrypt(note, password)
-        _state.value = _state.value.copy(decryptedContent = decrypted.content, importEncryptionState = ImportEncryptionState.Decrypted)
+        try {
+            val decrypted = interactor.decrypt(note, password)
+            _state.value = _state.value.copy(decryptedContent = decrypted.content, importEncryptionState = ImportEncryptionState.Decrypted)
+        } catch (e: IllegalArgumentException) {
+            _effect.emit(ImportMessageScreenEffect.MalformedEncryptedMessage)
+        } catch (e: BadPaddingException) {
+            _effect.emit(ImportMessageScreenEffect.WrongPassword)
+        }
     }
 
     fun saveNote() = viewModelScope.launch {
@@ -61,4 +68,6 @@ sealed class ImportMessageScreenEffect {
     data object RequestPassword : ImportMessageScreenEffect()
     data object ReturnToNoteList : ImportMessageScreenEffect()
     data object NoteSavedMessage : ImportMessageScreenEffect()
+    data object WrongPassword: ImportMessageScreenEffect()
+    data object MalformedEncryptedMessage: ImportMessageScreenEffect()
 }

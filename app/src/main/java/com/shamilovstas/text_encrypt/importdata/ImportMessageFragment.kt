@@ -79,6 +79,12 @@ class ImportMessageFragment : Fragment() {
             is ImportMessageScreenEffect.ReturnToNoteList -> {
                 findNavController().navigate(R.id.action_from_message_import_to_list)
             }
+            is ImportMessageScreenEffect.WrongPassword -> {
+                Snackbar.make(binding!!.root, R.string.wrong_password, Snackbar.LENGTH_SHORT).show()
+            }
+            is ImportMessageScreenEffect.MalformedEncryptedMessage -> {
+                Snackbar.make(binding!!.root, R.string.message_malformed, Snackbar.LENGTH_SHORT).show()
+            }
         }
     }
 

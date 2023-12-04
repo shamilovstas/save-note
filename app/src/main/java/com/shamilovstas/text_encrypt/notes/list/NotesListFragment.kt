@@ -61,11 +61,6 @@ class NotesListFragment : Fragment() {
     }
 
     private fun initViews(binding: FragmentNoteListBinding) {
-        binding.decrypt.setOnClickListener {
-            val note = adapter.currentList.first()
-            findNavController().navigate(R.id.action_from_list_to_import, bundleOf("note_id" to note.id))
-
-        }
         binding.recyclerNoteList.adapter = adapter
         binding.buttonAddNote.setOnClickListener {
             navigateToComposeNoteScreen()

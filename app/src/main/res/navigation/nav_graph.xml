@@ -3,24 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph.xml"
-    app:startDestination="@id/notes_list_fragment">
+    app:startDestination="@id/notes_list">
 
 
     <fragment
-        android:id="@+id/notes_list_fragment"
+        android:id="@+id/notes_list"
         android:name="com.shamilovstas.text_encrypt.notes.list.NotesListFragment"
         tools:layout="@layout/fragment_note_list">
 
         <action
             android:id="@+id/action_from_list_to_compose"
-            app:destination="@id/compose_note_fragment">
+            app:destination="@id/compose_note">
             <argument
                 android:name="note_id"
                 android:defaultValue="0" />
         </action>
 
         <action android:id="@+id/action_from_list_to_import"
-            app:destination="@id/import_note_fragment">
+            app:destination="@id/import_note">
             <argument
                 android:name="note_id"
                 android:defaultValue="0" />
@@ -28,7 +28,7 @@
     </fragment>
 
     <fragment
-        android:id="@+id/compose_note_fragment"
+        android:id="@+id/compose_note"
         android:name="com.shamilovstas.text_encrypt.ComposeNoteFragment"
         tools:layout="@layout/fragment_compose_note">
         <argument
@@ -38,11 +38,11 @@
     </fragment>
 
     <fragment
-        android:id="@+id/import_note_fragment"
+        android:id="@+id/import_note"
         android:name="com.shamilovstas.text_encrypt.importdata.ImportMessageFragment"
         tools:layout="@layout/fragment_import">
         <action
             android:id="@+id/action_from_message_import_to_list"
-            app:destination="@id/notes_list_fragment" />
+            app:destination="@id/notes_list" />
     </fragment>
 </navigation>

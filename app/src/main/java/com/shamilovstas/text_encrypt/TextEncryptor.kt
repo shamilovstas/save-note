@@ -1,6 +1,5 @@
 package com.shamilovstas.text_encrypt
 
-import android.util.Log
 import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.SecretKeyFactory
@@ -12,8 +11,6 @@ import javax.inject.Singleton
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
-
-private const val TAG = "TextEncryptor"
 
 @Singleton
 class TextEncryptor @Inject constructor() {
@@ -41,9 +38,7 @@ class TextEncryptor @Inject constructor() {
 
         val message = salt + iv.iv + ciphertext
 
-        Log.d("TextEncryptor","Before:  ${message.toString(Charsets.UTF_8)}")
         val base64Encoded = Base64.encode(message)
-        Log.d("TextEncryptor","After:  $base64Encoded")
         return base64Encoded
     }
 

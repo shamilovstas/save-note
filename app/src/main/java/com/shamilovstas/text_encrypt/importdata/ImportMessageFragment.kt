@@ -12,23 +12,25 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.shamilovstas.text_encrypt.R
-import com.shamilovstas.text_encrypt.databinding.FragmentImportBinding
+import com.shamilovstas.text_encrypt.base.ToolbarFragment
+import com.shamilovstas.text_encrypt.databinding.FragmentImportMessageBinding
 import com.shamilovstas.text_encrypt.showPasswordDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ImportMessageFragment : Fragment() {
+class ImportMessageFragment : ToolbarFragment() {
 
-    private var binding: FragmentImportBinding? = null
+    private var binding: FragmentImportMessageBinding? = null
     private val viewModel by viewModels<ImportMessageViewModel>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = FragmentImportBinding.inflate(inflater, container, false)
+        binding = FragmentImportMessageBinding.inflate(inflater, container, false)
         return binding!!.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initViews()
     }
 

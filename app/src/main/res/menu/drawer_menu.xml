@@ -6,7 +6,7 @@
         android:title="Notes" />
 
     <item
-        android:id="@+id/import_note"
+        android:id="@+id/import_dashboard"
         android:title="Import" />
 
 </menu>

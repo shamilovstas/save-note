@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import com.shamilovstas.text_encrypt.base.ToolbarFragment
 import com.shamilovstas.text_encrypt.databinding.FragmentComposeNoteBinding
 import com.shamilovstas.text_encrypt.notes.compose.ComposeNoteViewModel
 import com.shamilovstas.text_encrypt.notes.compose.ComposeScreenEffect
@@ -21,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ComposeNoteFragment : Fragment() {
+class ComposeNoteFragment : ToolbarFragment() {
 
     private val viewModel by viewModels<ComposeNoteViewModel>()
 
@@ -32,6 +33,7 @@ class ComposeNoteFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initViews()
     }
 

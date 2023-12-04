@@ -25,7 +25,10 @@ class MainActivity : AppCompatActivity(), AppBarConfigurationProvider {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_container) as NavHostFragment
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         val navController = navHostFragment.navController
-        appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
+        val topLevel = setOf(
+            R.id.notes_list, R.id.import_dashboard
+        )
+        appBarConfiguration = AppBarConfiguration(topLevel, drawerLayout)
         findViewById<NavigationView>(R.id.nav_view).setupWithNavController(navController)
     }
 

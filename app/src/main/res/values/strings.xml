@@ -28,4 +28,8 @@
     <string name="save_imported_note">Save</string>
     <string name="decrypt_note">Decrypt</string>
     <string name="message_malformed">Encrypted message is malformed</string>
+    <string name="title_notes_list">Notes</string>
+    <string name="title_compose_note">Compose</string>
+    <string name="title_import">Import</string>
+    <string name="title_import_message">Import message</string>
 </resources>

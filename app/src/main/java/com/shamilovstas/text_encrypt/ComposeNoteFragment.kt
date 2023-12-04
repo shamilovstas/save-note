@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -85,9 +85,12 @@ class ComposeNoteFragment : ToolbarFragment() {
             }
 
             is ComposeScreenEffect.RequestPassword -> {
-                childFragmentManager.showPasswordDialog(this, "password_dialog",
+                childFragmentManager.showPasswordDialog(
+                    lifecycleOwner = this,
+                    args = bundleOf(PasswordDialog.PREVIOUS_PASSWORD to it.previousPassword),
                     onResult = { viewModel.onPasswordEntered(it) },
-                    onDismiss = { viewModel.onPasswordDialogDismissed() })
+                    onDismiss = { viewModel.onPasswordDialogDismissed() }
+                )
             }
 
             is ComposeScreenEffect.ComposeCancelled -> {
@@ -111,8 +114,10 @@ class ComposeNoteFragment : ToolbarFragment() {
     private fun render(state: EncryptScreenState) = with(binding!!) {
         if (state.state == ComposeScreenState.Encrypted) {
             saveButton.text = getString(R.string.action_decrypt)
+            editText.isEnabled = false
         } else {
             saveButton.text = getString(R.string.action_save)
+            editText.isEnabled = true
         }
 
         if (editText.text?.toString() != state.note.content) {

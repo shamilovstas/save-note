@@ -93,7 +93,8 @@ class PasswordDialog : DialogFragment() {
 
 fun FragmentManager.showPasswordDialog(
     lifecycleOwner: LifecycleOwner,
-    tag: String = "",
+    tag: String = "password_dialog",
+    args: Bundle = bundleOf(),
     onResult: (String) -> Unit,
     onDismiss: () -> Unit = {}
 ) {
@@ -110,6 +111,7 @@ fun FragmentManager.showPasswordDialog(
         }
     }
     val dialog = PasswordDialog()
+    dialog.arguments = args
     dialog.show(this, tag)
 }
 

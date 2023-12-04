@@ -7,4 +7,11 @@
         <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body1</item>
     </style>
 
+    <style name="EncryptedMessageEditText">
+        <item name="android:gravity">top|start</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="android:inputType">textMultiLine</item>
+        <item name="android:minHeight">120dp</item>
+    </style>
+
 </resources>

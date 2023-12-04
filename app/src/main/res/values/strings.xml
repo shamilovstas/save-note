@@ -23,4 +23,8 @@
     <string name="menu_note_delete">Delete</string>
     <string name="menu_note_copy">Copy</string>
     <string name="message_note_text_copied">Note text has been copied</string>
+    <string name="import_content_hint">Paste the encrypted content here</string>
+    <string name="discard_imported_note">Discard</string>
+    <string name="save_imported_note">Save</string>
+    <string name="decrypt_note">Decrypt</string>
 </resources>

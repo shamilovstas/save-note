@@ -1,11 +1,9 @@
 package com.shamilovstas.text_encrypt
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -13,7 +11,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
 import com.google.android.material.snackbar.Snackbar
 import com.shamilovstas.text_encrypt.databinding.FragmentComposeNoteBinding
 import com.shamilovstas.text_encrypt.notes.compose.ComposeNoteViewModel
@@ -41,9 +38,12 @@ class ComposeNoteFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            val noteId = it.getInt("note_id", 0)
-            if (noteId != 0) {
-                viewModel.loadNote(noteId)
+
+            if (it.containsKey("note_id")) {
+                val noteId = it.getInt("note_id", 0)
+                if (noteId != 0) {
+                    viewModel.loadNote(noteId)
+                }
             }
         }
     }
@@ -83,13 +83,9 @@ class ComposeNoteFragment : Fragment() {
             }
 
             is ComposeScreenEffect.RequestPassword -> {
-                childFragmentManager.clearFragmentResult(PasswordDialog.REQUEST_PASSWORD_FRAGMENT)
-                childFragmentManager.setFragmentResultListener(PasswordDialog.REQUEST_PASSWORD_FRAGMENT, this) { _, bundle ->
-                    onPasswordDialogResult(bundle)
-                }
-                val dialog = PasswordDialog()
-                dialog.arguments = bundleOf(PasswordDialog.PREVIOUS_PASSWORD to it.previousPassword)
-                dialog.show(childFragmentManager, "password_dialog")
+                childFragmentManager.showPasswordDialog(this, "password_dialog",
+                    onResult = { viewModel.onPasswordEntered(it) },
+                    onDismiss = { viewModel.onPasswordDialogDismissed() })
             }
 
             is ComposeScreenEffect.ComposeCancelled -> {
@@ -109,19 +105,6 @@ class ComposeNoteFragment : Fragment() {
 
         }
     }
-
-    private fun onPasswordDialogResult(bundle: Bundle) {
-        val isDismissed = bundle.getBoolean(PasswordDialogResult.DismissResult.KEY, false)
-
-        if (isDismissed) {
-            viewModel.onPasswordDialogDismissed()
-        } else {
-            val password = bundle.getString(PasswordDialogResult.PasswordResult.KEY)
-                ?: throw IllegalStateException("Password cannot be null")
-            viewModel.onPasswordEntered(password)
-        }
-    }
-
 
     private fun render(state: EncryptScreenState) = with(binding!!) {
         if (state.state == ComposeScreenState.Encrypted) {

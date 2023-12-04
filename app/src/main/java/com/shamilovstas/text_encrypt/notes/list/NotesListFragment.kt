@@ -12,12 +12,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import com.shamilovstas.text_encrypt.ComposeNoteFragment
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.databinding.FragmentNoteListBinding
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -63,6 +61,11 @@ class NotesListFragment : Fragment() {
     }
 
     private fun initViews(binding: FragmentNoteListBinding) {
+        binding.decrypt.setOnClickListener {
+            val note = adapter.currentList.first()
+            findNavController().navigate(R.id.action_from_list_to_import, bundleOf("note_id" to note.id))
+
+        }
         binding.recyclerNoteList.adapter = adapter
         binding.buttonAddNote.setOnClickListener {
             navigateToComposeNoteScreen()

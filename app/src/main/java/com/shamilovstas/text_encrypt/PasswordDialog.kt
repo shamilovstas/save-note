@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.LifecycleOwner
 import com.shamilovstas.text_encrypt.databinding.DialogPasswordBinding
 
 
@@ -87,6 +89,28 @@ class PasswordDialog : DialogFragment() {
         binding = null
         super.onDestroyView()
     }
+}
+
+fun FragmentManager.showPasswordDialog(
+    lifecycleOwner: LifecycleOwner,
+    tag: String = "",
+    onResult: (String) -> Unit,
+    onDismiss: () -> Unit = {}
+) {
+    clearFragmentResult(PasswordDialog.REQUEST_PASSWORD_FRAGMENT)
+    setFragmentResultListener(PasswordDialog.REQUEST_PASSWORD_FRAGMENT, lifecycleOwner) { _, bundle ->
+        val isDismissed = bundle.getBoolean(PasswordDialogResult.DismissResult.KEY, false)
+
+        if (isDismissed) {
+            onDismiss()
+        } else {
+            val password = bundle.getString(PasswordDialogResult.PasswordResult.KEY)
+                ?: throw IllegalStateException("Password cannot be null")
+            onResult(password)
+        }
+    }
+    val dialog = PasswordDialog()
+    dialog.show(this, tag)
 }
 
 sealed class PasswordDialogResult {

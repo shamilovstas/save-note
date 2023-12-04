@@ -8,12 +8,19 @@
 
     <fragment
         android:id="@+id/notes_list_fragment"
-        tools:layout="@layout/fragment_note_list"
-        android:name="com.shamilovstas.text_encrypt.notes.list.NotesListFragment">
+        android:name="com.shamilovstas.text_encrypt.notes.list.NotesListFragment"
+        tools:layout="@layout/fragment_note_list">
 
         <action
             android:id="@+id/action_from_list_to_compose"
-            app:destination="@id/compose_note_fragment" >
+            app:destination="@id/compose_note_fragment">
+            <argument
+                android:name="note_id"
+                android:defaultValue="0" />
+        </action>
+
+        <action android:id="@+id/action_from_list_to_import"
+            app:destination="@id/import_note_fragment">
             <argument
                 android:name="note_id"
                 android:defaultValue="0" />
@@ -22,11 +29,20 @@
 
     <fragment
         android:id="@+id/compose_note_fragment"
-        tools:layout="@layout/fragment_compose_note"
-        android:name="com.shamilovstas.text_encrypt.ComposeNoteFragment" >
+        android:name="com.shamilovstas.text_encrypt.ComposeNoteFragment"
+        tools:layout="@layout/fragment_compose_note">
         <argument
             android:name="note_id"
-            app:argType="integer"
-            android:defaultValue="0" />
+            android:defaultValue="0"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/import_note_fragment"
+        android:name="com.shamilovstas.text_encrypt.importdata.ImportMessageFragment"
+        tools:layout="@layout/fragment_import">
+        <action
+            android:id="@+id/action_from_message_import_to_list"
+            app:destination="@id/notes_list_fragment" />
     </fragment>
 </navigation>

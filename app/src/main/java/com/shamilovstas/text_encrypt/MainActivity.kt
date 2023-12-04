@@ -9,10 +9,13 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import com.shamilovstas.text_encrypt.base.AppBarConfigurationProvider
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AppBarConfigurationProvider {
+
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +25,11 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_container) as NavHostFragment
         val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
         val navController = navHostFragment.navController
-        val appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
+        appBarConfiguration = AppBarConfiguration(navController.graph, drawerLayout)
         findViewById<NavigationView>(R.id.nav_view).setupWithNavController(navController)
+    }
+
+    override fun provideAppBarConfiguration(): AppBarConfiguration {
+        return appBarConfiguration
     }
 }

@@ -13,13 +13,14 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.shamilovstas.text_encrypt.R
+import com.shamilovstas.text_encrypt.base.ToolbarFragment
 import com.shamilovstas.text_encrypt.databinding.FragmentNoteListBinding
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class NotesListFragment : Fragment() {
+class NotesListFragment : ToolbarFragment() {
 
     private val viewModel by viewModels<NotesListViewModel>()
     private var binding: FragmentNoteListBinding? = null
@@ -36,6 +37,7 @@ class NotesListFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initViews(binding!!)
     }
 

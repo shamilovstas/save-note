@@ -2,19 +2,16 @@ package com.shamilovstas.text_encrypt.files
 
 import androidx.annotation.WorkerThread
 import com.shamilovstas.text_encrypt.notes.domain.Note
-import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.InputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.StandardOpenOption
 import java.time.format.DateTimeFormatter
-import java.util.Base64
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
+@OptIn(ExperimentalEncodingApi::class)
 @Singleton
 class ExportInteractor @Inject constructor(
     @InternalFilesDir private val baseDir: File
@@ -26,12 +23,16 @@ class ExportInteractor @Inject constructor(
 
     @WorkerThread
     fun export(note: Note, outputStream: OutputStream) {
-        val serializedDate = DateTimeFormatter.ISO_DATE_TIME.format(note.createdDate)
-        val content = note.content
-        val writer = outputStream.writer()
-        writer.write(serializedDate)
-        writer.write(content)
-        writer.close()
+        val millis = note.createdDate?.toInstant()?.toEpochMilli() ?: 0L
+        val messageDecoded = Base64.decode(note.content)
+
+        val messageSize = Long.SIZE_BYTES + Int.SIZE_BYTES + messageDecoded.size
+        val byteBuffer = ByteBuffer.allocate(messageSize)
+
+        byteBuffer.putLong(millis)
+        byteBuffer.putInt(messageDecoded.size)
+        byteBuffer.put(messageDecoded)
+        outputStream.write(byteBuffer.array())
     }
 
     fun createExportFilename(note: Note): String {

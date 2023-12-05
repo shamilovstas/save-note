@@ -1,5 +1,6 @@
 package com.shamilovstas.text_encrypt.notes.list
 
+import android.content.ContentResolver.MimeTypeInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -54,7 +55,7 @@ class NotesListFragment : ToolbarFragment() {
         viewModel.deleteNote(item)
     }
 
-    val createDocument = registerForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri ->
+    val createDocument = registerForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
         viewModel.exportNote(uri, requireActivity().contentResolver)
     }
     private fun onClickShareNoteItem(item: Note) {

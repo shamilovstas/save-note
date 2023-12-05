@@ -1,4 +1,4 @@
-package com.shamilovstas.text_encrypt
+package com.shamilovstas.text_encrypt.utils
 
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable

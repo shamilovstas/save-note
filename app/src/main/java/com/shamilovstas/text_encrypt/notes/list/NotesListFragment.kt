@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -54,8 +54,11 @@ class NotesListFragment : ToolbarFragment() {
         viewModel.deleteNote(item)
     }
 
+    val createDocument = registerForActivityResult(ActivityResultContracts.CreateDocument("text/plain")) { uri ->
+        viewModel.exportNote(uri, requireActivity().contentResolver)
+    }
     private fun onClickShareNoteItem(item: Note) {
-        TODO()
+        viewModel.onClickShareNoteItem(item)
     }
 
     private fun onClickCopyNote(item: Note) {
@@ -84,9 +87,15 @@ class NotesListFragment : ToolbarFragment() {
         viewModel.loadNotes()
     }
 
-    private fun effect(effects: NotesListEffects) = when(effects) {
+    private fun effect(effect: NotesListEffects) = when(effect) {
         is NotesListEffects.NoteContentCopied -> {
             Snackbar.make(binding!!.root, getString(R.string.message_note_text_copied), Snackbar.LENGTH_SHORT).show()
+        }
+        is NotesListEffects.CreatePublicFile -> {
+            createDocument.launch(effect.filename)
+        }
+        is NotesListEffects.NoteExported -> {
+            Snackbar.make(binding!!.root, getString(R.string.note_exported, effect.filename), Snackbar.LENGTH_SHORT).show()
         }
     }
 

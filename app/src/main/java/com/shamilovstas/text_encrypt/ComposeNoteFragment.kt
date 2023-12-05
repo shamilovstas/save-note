@@ -18,6 +18,7 @@ import com.shamilovstas.text_encrypt.notes.compose.ComposeNoteViewModel
 import com.shamilovstas.text_encrypt.notes.compose.ComposeScreenEffect
 import com.shamilovstas.text_encrypt.notes.compose.ComposeScreenState
 import com.shamilovstas.text_encrypt.notes.compose.EncryptScreenState
+import com.shamilovstas.text_encrypt.utils.setIcon
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 

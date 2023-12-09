@@ -3,8 +3,11 @@ package com.shamilovstas.text_encrypt.files
 import androidx.annotation.WorkerThread
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import java.io.File
+import java.io.InputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
+import java.time.Instant
+import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -33,6 +36,23 @@ class ExportInteractor @Inject constructor(
         byteBuffer.putInt(messageDecoded.size)
         byteBuffer.put(messageDecoded)
         outputStream.write(byteBuffer.array())
+    }
+
+    fun import(inputStream: InputStream) : Note {
+        val dateByteData = ByteArray(Long.SIZE_BYTES)
+        inputStream.read(dateByteData)
+        val dateByteArray=  ByteBuffer.wrap(dateByteData)
+        val millis = dateByteArray.getLong()
+
+        val array = ByteArray(Int.SIZE_BYTES)
+        inputStream.read(array, Long.SIZE_BYTES, Int.SIZE_BYTES)
+        val size = ByteBuffer.wrap(array).getInt()
+        val messageByteArray = ByteArray(size)
+        inputStream.read(messageByteArray, Long.SIZE_BYTES + Int.SIZE_BYTES, size)
+        val content = Base64.encode(messageByteArray)
+
+        val note = Note(content = content, createdDate = OffsetDateTime.from(Instant.ofEpochMilli(millis)))
+        return note
     }
 
     fun createExportFilename(note: Note): String {

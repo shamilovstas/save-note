@@ -31,11 +31,22 @@ class ImportMessageViewModel @Inject constructor(
     val state: StateFlow<ImportMessageScreenState> = _state
 
     fun onPasswordEntered(password: String) = viewModelScope.launch {
+        val cipherState = state.value.cipherState
         val content = requireNotNull(state.value.content)
-        val note = Note(content = content)
+        val note = Note(content = content, description = state.value.description)
         try {
-            val decrypted = notesInteractor.decrypt(note, password)
-            _state.value = _state.value.copy(content = decrypted.content, cipherState = CipherState.Decrypted)
+            val processedNote =  if (cipherState == CipherState.Decrypted) {
+                notesInteractor.save(note, password)
+             } else {
+                notesInteractor.decrypt(note, password)
+            }
+
+            if (cipherState == CipherState.Encrypted) {
+                _state.value = _state.value.copy(content = processedNote.content, cipherState = CipherState.Decrypted)
+            } else {
+                _effect.emit(ImportMessageScreenEffect.NoteSavedMessage)
+                _effect.emit(ImportMessageScreenEffect.ComposeComplete)
+            }
         } catch (e: EncryptedMessageMalformed) {
             _effect.emit(ImportMessageScreenEffect.MalformedEncryptedMessage)
         } catch (e: IllegalArgumentException) {
@@ -45,12 +56,17 @@ class ImportMessageViewModel @Inject constructor(
         }
     }
 
-    fun saveNote() = viewModelScope.launch {
-        val content = requireNotNull(state.value.content)
-        val note = Note(content = content)
-        notesInteractor.saveEncrypted(note)
-        _effect.emit(ImportMessageScreenEffect.NoteSavedMessage)
-        _effect.emit(ImportMessageScreenEffect.ReturnToNoteList)
+    fun saveNote(content: String, description: String = "") = viewModelScope.launch {
+        val cipherState = state.value.cipherState
+        _state.value = _state.value.copy(content = content, description = description)
+        if (cipherState == CipherState.Decrypted) {
+            _effect.emit(ImportMessageScreenEffect.RequestPassword)
+        } else {
+            val note = Note(content = content, description = description)
+            notesInteractor.save(note)
+            _effect.emit(ImportMessageScreenEffect.NoteSavedMessage)
+            _effect.emit(ImportMessageScreenEffect.ReturnToNoteList)
+        }
     }
 
     fun discard() = viewModelScope.launch {
@@ -68,10 +84,15 @@ class ImportMessageViewModel @Inject constructor(
         }
         _state.value = _state.value.copy(content = note.content)
     }
+
+    fun setCipherMode(cipherMode: CipherState) {
+        _state.value = _state.value.copy(cipherState = cipherMode)
+    }
 }
 
 sealed class ImportMessageScreenEffect {
     data object RequestPassword : ImportMessageScreenEffect()
+    data object ComposeComplete: ImportMessageScreenEffect()
     data object ReturnToNoteList : ImportMessageScreenEffect()
     data object NoteSavedMessage : ImportMessageScreenEffect()
     data object WrongPassword: ImportMessageScreenEffect()

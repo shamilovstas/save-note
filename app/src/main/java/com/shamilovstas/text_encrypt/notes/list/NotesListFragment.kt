@@ -16,6 +16,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.base.ToolbarFragment
 import com.shamilovstas.text_encrypt.databinding.FragmentNoteListBinding
+import com.shamilovstas.text_encrypt.importdata.ImportMessageFragment
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -101,7 +102,7 @@ class NotesListFragment : ToolbarFragment() {
     }
 
     private fun navigateToComposeNoteScreen() {
-        findNavController().navigate(R.id.action_from_list_to_compose)
+        findNavController().navigate(R.id.action_from_list_to_compose, ImportMessageFragment.composeArgs())
     }
 
     private fun render(state: NotesListScreenState) = with(binding!!) {

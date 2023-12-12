@@ -33,4 +33,5 @@
     <string name="title_import">Import</string>
     <string name="title_import_message">Import message</string>
     <string name="note_exported">Exported to \"%s\"</string>
+    <string name="enter_message">Enter message</string>
 </resources>

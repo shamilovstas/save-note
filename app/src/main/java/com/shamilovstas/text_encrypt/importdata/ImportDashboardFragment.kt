@@ -16,7 +16,7 @@ class ImportDashboardFragment : ToolbarFragment() {
 
     private val filePickLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) {
         findNavController().navigate(
-            R.id.action_from_import_dashboard_to_import_message, ImportMessageFragment.screenArgs(
+            R.id.action_from_import_dashboard_to_import_message, ImportMessageFragment.fileImportArgs(
                 requireNotNull(it)
             )
         )

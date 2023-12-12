@@ -13,27 +13,18 @@ class NotesInteractor @Inject constructor(
     private val repository: NotesRepository
 ) {
 
-    suspend fun save(note: Note, password: String): Note {
+    suspend fun save(note: Note, password: String? = null): Note {
         if (note.content.isEmpty()) {
             throw ClearTextIsEmpty()
         }
 
-        val encrypted = encryptor.encrypt(note.content, password)
-
-        val date = note.createdDate ?: OffsetDateTime.now()
-        val newNote = note.copy(content = encrypted, createdDate = date)
-        val entity = newNote.toEntity()
-        repository.saveNote(entity)
-        return newNote
-    }
-
-    suspend fun saveEncrypted(note: Note): Note {
-        if (note.content.isEmpty()) {
-            throw ClearTextIsEmpty()
+        var content = note.content
+        if (password != null) {
+            content = encryptor.encrypt(note.content, password)
         }
 
         val date = note.createdDate ?: OffsetDateTime.now()
-        val newNote = note.copy(createdDate = date)
+        val newNote = note.copy(content = content, createdDate = date)
         val entity = newNote.toEntity()
         repository.saveNote(entity)
         return newNote

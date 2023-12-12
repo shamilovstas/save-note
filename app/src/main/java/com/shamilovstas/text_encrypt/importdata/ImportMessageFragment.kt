@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -31,13 +30,27 @@ class ImportMessageFragment : ToolbarFragment() {
     companion object {
 
         private const val KEY_FILE_URI = "fileUri"
-        fun screenArgs(uri: Uri): Bundle {
-            return bundleOf(KEY_FILE_URI to uri)
+        private const val KEY_MODE = "key_mode"
+        fun fileImportArgs(uri: Uri): Bundle {
+            return bundleOf(
+                KEY_FILE_URI to uri,
+                KEY_MODE to CipherState.Encrypted.ordinal
+            )
+        }
+
+        fun composeArgs(): Bundle {
+            return bundleOf(KEY_MODE to CipherState.Decrypted.ordinal)
         }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        if (!requireArguments().containsKey(KEY_MODE)) {
+            throw IllegalStateException("Mode not provided")
+        }
+
+        val cipherMode = CipherState.entries[requireArguments().getInt(KEY_MODE)]
+        viewModel.setCipherMode(cipherMode)
         val fileUri = arguments?.getParcelable<Uri>(KEY_FILE_URI)
 
         if (fileUri != null) {
@@ -67,13 +80,10 @@ class ImportMessageFragment : ToolbarFragment() {
         }
 
         btnSaveImportedNote.setOnClickListener {
-            viewModel.saveNote()
+            val description = descriptionEditText.text?.toString() ?: ""
+            viewModel.saveNote(editText.text?.toString() ?: "", description = description)
         }
 
-        btnDiscardImportedNote.setOnClickListener {
-            editText.text?.clear()
-            viewModel.discard()
-        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -94,6 +104,9 @@ class ImportMessageFragment : ToolbarFragment() {
 
     private fun effect(effect: ImportMessageScreenEffect) {
         when(effect) {
+            is ImportMessageScreenEffect.ComposeComplete -> {
+                findNavController().navigateUp()
+            }
             is ImportMessageScreenEffect.RequestPassword -> {
                 childFragmentManager.showPasswordDialog(
                     this,
@@ -119,11 +132,12 @@ class ImportMessageFragment : ToolbarFragment() {
         if (state.cipherState == CipherState.Encrypted) {
             btnDecryptNote.visibility = View.VISIBLE
             groupImportControls.visibility = View.GONE
-            editText.isEnabled = true
+            tilEditText.hint = getString(R.string.import_content_hint)
         } else {
             btnDecryptNote.visibility = View.GONE
             groupImportControls.visibility = View.VISIBLE
-            editText.isEnabled = false
+            tilEditText.hint = getString(R.string.enter_message)
+            tilDescriptionText.visibility = View.VISIBLE
         }
 
         if (state.content != null) {

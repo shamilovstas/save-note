@@ -17,6 +17,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.base.ToolbarFragment
 import com.shamilovstas.text_encrypt.databinding.FragmentImportMessageBinding
+import com.shamilovstas.text_encrypt.notes.compose.CipherState
 import com.shamilovstas.text_encrypt.showPasswordDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -115,7 +116,7 @@ class ImportMessageFragment : ToolbarFragment() {
     }
 
     private fun render(state: ImportMessageScreenState) = with(binding!!) {
-        if (state.importEncryptionState == ImportEncryptionState.Encrypted) {
+        if (state.cipherState == CipherState.Encrypted) {
             btnDecryptNote.visibility = View.VISIBLE
             groupImportControls.visibility = View.GONE
             editText.isEnabled = true

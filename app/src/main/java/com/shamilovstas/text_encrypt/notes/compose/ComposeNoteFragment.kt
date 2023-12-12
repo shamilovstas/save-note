@@ -1,4 +1,4 @@
-package com.shamilovstas.text_encrypt
+package com.shamilovstas.text_encrypt.notes.compose
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,12 +12,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import com.shamilovstas.text_encrypt.PasswordDialog
+import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.base.ToolbarFragment
 import com.shamilovstas.text_encrypt.databinding.FragmentComposeNoteBinding
-import com.shamilovstas.text_encrypt.notes.compose.ComposeNoteViewModel
-import com.shamilovstas.text_encrypt.notes.compose.ComposeScreenEffect
-import com.shamilovstas.text_encrypt.notes.compose.ComposeScreenState
-import com.shamilovstas.text_encrypt.notes.compose.EncryptScreenState
+import com.shamilovstas.text_encrypt.showPasswordDialog
 import com.shamilovstas.text_encrypt.utils.setIcon
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -113,7 +112,7 @@ class ComposeNoteFragment : ToolbarFragment() {
     }
 
     private fun render(state: EncryptScreenState) = with(binding!!) {
-        if (state.state == ComposeScreenState.Encrypted) {
+        if (state.cipherState == CipherState.Encrypted) {
             saveButton.text = getString(R.string.action_decrypt)
             editText.isEnabled = false
         } else {

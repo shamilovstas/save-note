@@ -32,7 +32,7 @@
     <fragment
         android:id="@+id/compose_note"
         android:label="@string/title_compose_note"
-        android:name="com.shamilovstas.text_encrypt.ComposeNoteFragment"
+        android:name="com.shamilovstas.text_encrypt.notes.compose.ComposeNoteFragment"
         tools:layout="@layout/fragment_compose_note">
         <argument
             android:name="note_id"

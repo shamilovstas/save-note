@@ -38,9 +38,9 @@ class ComposeNoteViewModel @Inject constructor(
     }
 
     fun onPasswordEntered(password: String) {
-        val currentState = state.value.state
+        val currentState = state.value.cipherState
         val note = state.value.note
-        if (currentState == ComposeScreenState.Encrypted) {
+        if (currentState == CipherState.Encrypted) {
             _state.value = _state.value.copy(previousPassword = password)
             decrypt(note, password)
         } else {
@@ -51,7 +51,7 @@ class ComposeNoteViewModel @Inject constructor(
     private fun decrypt(note: Note, password: String) = viewModelScope.launch {
         try {
             val decryptedNote = interactor.decrypt(note, password)
-            _state.value = state.value.copy(note = decryptedNote, state = ComposeScreenState.Clear)
+            _state.value = state.value.copy(note = decryptedNote, cipherState = CipherState.Decrypted)
         } catch (e: BadPaddingException) {
             _effects.emit(ComposeScreenEffect.WrongPassword)
         }
@@ -62,7 +62,7 @@ class ComposeNoteViewModel @Inject constructor(
 
     fun loadNote(noteId: Int) = viewModelScope.launch {
         val note = withContext(Dispatchers.IO) { interactor.getNote(noteId) }
-        _state.value = _state.value.copy(note = note, state = ComposeScreenState.Encrypted)
+        _state.value = _state.value.copy(note = note, cipherState = CipherState.Encrypted)
         _effects.emit(ComposeScreenEffect.RequestPassword(state.value.previousPassword))
     }
 
@@ -73,17 +73,11 @@ class ComposeNoteViewModel @Inject constructor(
     }
 
     fun onPasswordDialogDismissed() = viewModelScope.launch {
-        if (state.value.state == ComposeScreenState.Encrypted) {
+        if (state.value.cipherState == CipherState.Encrypted) {
             _effects.emit(ComposeScreenEffect.ComposeCancelled)
         }
     }
 }
-
-data class EncryptScreenState(
-    val note: Note = Note(),
-    val state: ComposeScreenState = ComposeScreenState.Clear,
-    val previousPassword: String? = null
-)
 
 sealed class ComposeScreenEffect {
     data class ComposeComplete(val data: Note) : ComposeScreenEffect()
@@ -91,8 +85,4 @@ sealed class ComposeScreenEffect {
     data class RequestPassword(val previousPassword: String? = null) : ComposeScreenEffect()
     data object WrongPassword : ComposeScreenEffect()
     data object TextIsEmpty : ComposeScreenEffect()
-}
-
-enum class ComposeScreenState {
-    Clear, Encrypted
 }

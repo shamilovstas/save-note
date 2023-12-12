@@ -1,6 +1,5 @@
 package com.shamilovstas.text_encrypt.notes.domain
 
-import com.shamilovstas.text_encrypt.TextEncryptor
 import com.shamilovstas.text_encrypt.notes.repository.NotesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

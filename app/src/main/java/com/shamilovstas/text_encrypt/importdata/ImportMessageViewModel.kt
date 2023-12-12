@@ -4,8 +4,9 @@ import android.content.ContentResolver
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.shamilovstas.text_encrypt.EncryptedMessageMalformed
+import com.shamilovstas.text_encrypt.notes.domain.EncryptedMessageMalformed
 import com.shamilovstas.text_encrypt.files.FileInteractor
+import com.shamilovstas.text_encrypt.notes.compose.CipherState
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import com.shamilovstas.text_encrypt.notes.domain.NotesInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,7 +35,7 @@ class ImportMessageViewModel @Inject constructor(
         val note = Note(content = content)
         try {
             val decrypted = notesInteractor.decrypt(note, password)
-            _state.value = _state.value.copy(content = decrypted.content, importEncryptionState = ImportEncryptionState.Decrypted)
+            _state.value = _state.value.copy(content = decrypted.content, cipherState = CipherState.Decrypted)
         } catch (e: EncryptedMessageMalformed) {
             _effect.emit(ImportMessageScreenEffect.MalformedEncryptedMessage)
         } catch (e: IllegalArgumentException) {
@@ -53,7 +54,7 @@ class ImportMessageViewModel @Inject constructor(
     }
 
     fun discard() = viewModelScope.launch {
-        _state.value = _state.value.copy(content = null, importEncryptionState = ImportEncryptionState.Encrypted)
+        _state.value = _state.value.copy(content = null, cipherState = CipherState.Encrypted)
     }
 
     fun decryptNote(encryptedContent: String?) = viewModelScope.launch {
@@ -67,16 +68,6 @@ class ImportMessageViewModel @Inject constructor(
         }
         _state.value = _state.value.copy(content = note.content)
     }
-}
-
-data class ImportMessageScreenState(
-    val content: String? = null,
-    val importEncryptionState: ImportEncryptionState = ImportEncryptionState.Encrypted,
-    val isDecryptionPossible: Boolean = false
-)
-
-enum class ImportEncryptionState {
-    Encrypted, Decrypted
 }
 
 sealed class ImportMessageScreenEffect {

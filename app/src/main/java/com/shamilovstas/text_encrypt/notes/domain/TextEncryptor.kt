@@ -1,4 +1,4 @@
-package com.shamilovstas.text_encrypt
+package com.shamilovstas.text_encrypt.notes.domain
 
 import java.security.SecureRandom
 import javax.crypto.Cipher

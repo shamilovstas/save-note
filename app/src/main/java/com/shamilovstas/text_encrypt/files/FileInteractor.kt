@@ -16,12 +16,13 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 @OptIn(ExperimentalEncodingApi::class)
 @Singleton
-class ExportInteractor @Inject constructor(
+class FileInteractor @Inject constructor(
     @InternalFilesDir private val baseDir: File
 ) {
 
     companion object {
         private val FILENAME_FROM_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyymmdd_hhmmss")
+        const val NOTE_FILE_EXTENSION = "encn"
     }
 
     @WorkerThread
@@ -58,7 +59,6 @@ class ExportInteractor @Inject constructor(
     fun createExportFilename(note: Note): String {
         val createdDate = requireNotNull(note.createdDate)
         val name = FILENAME_FROM_DATE_FORMATTER.format(createdDate)
-        val extension = ".encn"
-        return name + extension
+        return name + NOTE_FILE_EXTENSION
     }
 }

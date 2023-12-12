@@ -6,7 +6,7 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.shamilovstas.text_encrypt.files.ExportInteractor
+import com.shamilovstas.text_encrypt.files.FileInteractor
 import com.shamilovstas.text_encrypt.notes.domain.CopyNoteContentUseCase
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import com.shamilovstas.text_encrypt.notes.domain.NotesInteractor
@@ -28,7 +28,7 @@ private const val NOTE_EXPORT_KEY = "note_export_key"
 class NotesListViewModel @Inject constructor(
     private val notesInteractor: NotesInteractor,
     private val copyNoteContentUseCase: CopyNoteContentUseCase,
-    private val exportInteractor: ExportInteractor,
+    private val exportInteractor: FileInteractor,
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 

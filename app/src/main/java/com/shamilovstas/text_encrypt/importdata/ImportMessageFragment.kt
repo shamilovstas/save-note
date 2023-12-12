@@ -1,9 +1,11 @@
 package com.shamilovstas.text_encrypt.importdata
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -23,6 +25,14 @@ class ImportMessageFragment : ToolbarFragment() {
 
     private var binding: FragmentImportMessageBinding? = null
     private val viewModel by viewModels<ImportMessageViewModel>()
+
+    companion object {
+
+        private const val KEY_FILE_URI = "fileUri"
+        fun screenArgs(uri: Uri): Bundle {
+            return bundleOf(KEY_FILE_URI to uri)
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentImportMessageBinding.inflate(inflater, container, false)

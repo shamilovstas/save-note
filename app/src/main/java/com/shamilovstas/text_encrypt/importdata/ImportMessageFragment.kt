@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -33,6 +34,15 @@ class ImportMessageFragment : ToolbarFragment() {
             return bundleOf(KEY_FILE_URI to uri)
         }
     }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val fileUri = arguments?.getParcelable<Uri>(KEY_FILE_URI)
+
+        if (fileUri != null) {
+            viewModel.import(fileUri, requireActivity().contentResolver)
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentImportMessageBinding.inflate(inflater, container, false)
@@ -45,6 +55,10 @@ class ImportMessageFragment : ToolbarFragment() {
     }
 
     private fun initViews() = with(binding!!) {
+
+        editText.doAfterTextChanged {
+            btnDecryptNote.isEnabled = !it.isNullOrEmpty()
+        }
 
         btnDecryptNote.setOnClickListener {
             val encryptedContent = editText.text?.toString()
@@ -111,8 +125,8 @@ class ImportMessageFragment : ToolbarFragment() {
             editText.isEnabled = false
         }
 
-        if (state.decryptedContent != null) {
-            editText.setText(state.decryptedContent)
+        if (state.content != null) {
+            editText.setText(state.content)
         }
     }
 

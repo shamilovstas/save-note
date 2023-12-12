@@ -1,7 +1,11 @@
 package com.shamilovstas.text_encrypt.importdata
 
+import android.content.ContentResolver
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.shamilovstas.text_encrypt.EncryptedMessageMalformed
+import com.shamilovstas.text_encrypt.files.FileInteractor
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import com.shamilovstas.text_encrypt.notes.domain.NotesInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ImportMessageViewModel @Inject constructor(
-    private val interactor: NotesInteractor
+    private val notesInteractor: NotesInteractor,
+    private val fileInteractor: FileInteractor
 ) : ViewModel() {
 
     private val _effect = MutableSharedFlow<ImportMessageScreenEffect>()
@@ -25,10 +30,13 @@ class ImportMessageViewModel @Inject constructor(
     val state: StateFlow<ImportMessageScreenState> = _state
 
     fun onPasswordEntered(password: String) = viewModelScope.launch {
-        val note = Note(content = state.value.encryptedContent)
+        val content = requireNotNull(state.value.content)
+        val note = Note(content = content)
         try {
-            val decrypted = interactor.decrypt(note, password)
-            _state.value = _state.value.copy(decryptedContent = decrypted.content, importEncryptionState = ImportEncryptionState.Decrypted)
+            val decrypted = notesInteractor.decrypt(note, password)
+            _state.value = _state.value.copy(content = decrypted.content, importEncryptionState = ImportEncryptionState.Decrypted)
+        } catch (e: EncryptedMessageMalformed) {
+            _effect.emit(ImportMessageScreenEffect.MalformedEncryptedMessage)
         } catch (e: IllegalArgumentException) {
             _effect.emit(ImportMessageScreenEffect.MalformedEncryptedMessage)
         } catch (e: BadPaddingException) {
@@ -37,25 +45,32 @@ class ImportMessageViewModel @Inject constructor(
     }
 
     fun saveNote() = viewModelScope.launch {
-        val note = Note(content = state.value.encryptedContent)
-        interactor.saveEncrypted(note)
+        val content = requireNotNull(state.value.content)
+        val note = Note(content = content)
+        notesInteractor.saveEncrypted(note)
         _effect.emit(ImportMessageScreenEffect.NoteSavedMessage)
         _effect.emit(ImportMessageScreenEffect.ReturnToNoteList)
     }
 
     fun discard() = viewModelScope.launch {
-        _state.value = _state.value.copy(decryptedContent = null, importEncryptionState = ImportEncryptionState.Encrypted)
+        _state.value = _state.value.copy(content = null, importEncryptionState = ImportEncryptionState.Encrypted)
     }
 
     fun decryptNote(encryptedContent: String?) = viewModelScope.launch {
-        _state.value = _state.value.copy(encryptedContent = encryptedContent!!)
+        _state.value = _state.value.copy(content = encryptedContent!!)
         _effect.emit(ImportMessageScreenEffect.RequestPassword)
+    }
+
+    fun import(fileUri: Uri, contentResolver: ContentResolver) {
+        val note = contentResolver.openInputStream(fileUri).use {
+            return@use fileInteractor.import(requireNotNull(it))
+        }
+        _state.value = _state.value.copy(content = note.content)
     }
 }
 
 data class ImportMessageScreenState(
-    val encryptedContent: String = "",
-    val decryptedContent: String? = null,
+    val content: String? = null,
     val importEncryptionState: ImportEncryptionState = ImportEncryptionState.Encrypted,
     val isDecryptionPossible: Boolean = false
 )

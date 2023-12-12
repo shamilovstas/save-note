@@ -1,5 +1,6 @@
 package com.shamilovstas.text_encrypt.files
 
+import android.util.Log
 import androidx.annotation.WorkerThread
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import java.io.File
@@ -8,6 +9,7 @@ import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.time.Instant
 import java.time.OffsetDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -22,6 +24,7 @@ class FileInteractor @Inject constructor(
 
     companion object {
         private val FILENAME_FROM_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyymmdd_hhmmss")
+        private const val TAG = "FileInteractor"
         const val NOTE_FILE_EXTENSION = "encn"
     }
 
@@ -36,6 +39,7 @@ class FileInteractor @Inject constructor(
         byteBuffer.putLong(millis)
         byteBuffer.putInt(messageDecoded.size)
         byteBuffer.put(messageDecoded)
+        Log.d(TAG, "export: millis: $millis\nmessage.size: ${messageDecoded.size}\nmessage: ${messageDecoded.toString(Charsets.UTF_8)}")
         outputStream.write(byteBuffer.array())
     }
 
@@ -44,21 +48,22 @@ class FileInteractor @Inject constructor(
         inputStream.read(dateByteData)
         val dateByteArray=  ByteBuffer.wrap(dateByteData)
         val millis = dateByteArray.getLong()
-
+        Log.d(TAG, "import: millis: $millis")
         val array = ByteArray(Int.SIZE_BYTES)
-        inputStream.read(array, Long.SIZE_BYTES, Int.SIZE_BYTES)
+        inputStream.read(array)
         val size = ByteBuffer.wrap(array).getInt()
+        Log.d(TAG, "import: messageSize: $size")
         val messageByteArray = ByteArray(size)
-        inputStream.read(messageByteArray, Long.SIZE_BYTES + Int.SIZE_BYTES, size)
+        inputStream.read(messageByteArray)
         val content = Base64.encode(messageByteArray)
-
-        val note = Note(content = content, createdDate = OffsetDateTime.from(Instant.ofEpochMilli(millis)))
+        Log.d(TAG, "import: message: ${messageByteArray.toString(Charsets.UTF_8)}")
+        val note = Note(content = content, createdDate = OffsetDateTime.from(Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault())))
         return note
     }
 
     fun createExportFilename(note: Note): String {
         val createdDate = requireNotNull(note.createdDate)
         val name = FILENAME_FROM_DATE_FORMATTER.format(createdDate)
-        return name + NOTE_FILE_EXTENSION
+        return "$name.$NOTE_FILE_EXTENSION"
     }
 }

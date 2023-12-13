@@ -14,7 +14,8 @@ abstract class ToolbarFragment: Fragment() {
     @CallSuper
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
-        val configurationProvider = requireActivity() as AppBarConfigurationProvider
+        val configurationProvider = requireActivity() as? AppBarConfigurationProvider ?: return
+
         val navController = findNavController()
 
         NavigationUI.setupWithNavController(toolbar, navController, configurationProvider.provideAppBarConfiguration())

@@ -13,7 +13,7 @@ import com.shamilovstas.text_encrypt.base.AppBarConfigurationProvider
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), AppBarConfigurationProvider {
+open class MainActivity : AppCompatActivity(), AppBarConfigurationProvider {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 

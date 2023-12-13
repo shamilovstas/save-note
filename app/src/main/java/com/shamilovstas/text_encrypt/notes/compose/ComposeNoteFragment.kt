@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import com.shamilovstas.text_encrypt.PasswordDialog
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.base.ToolbarFragment
 import com.shamilovstas.text_encrypt.databinding.FragmentComposeNoteBinding
@@ -132,7 +133,9 @@ class ComposeNoteFragment : ToolbarFragment() {
                 childFragmentManager.showPasswordDialog(
                     this,
                     "password_dialog",
-                    onResult = { viewModel.onPasswordEntered(it) })
+                    onResult = { viewModel.onPasswordEntered(it) },
+                    args = bundleOf(PasswordDialog.PREVIOUS_PASSWORD to effect.previousPassword)
+                )
             }
 
             is ImportMessageScreenEffect.NoteSavedMessage -> {

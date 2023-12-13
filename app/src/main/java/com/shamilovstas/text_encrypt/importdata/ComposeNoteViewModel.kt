@@ -4,22 +4,24 @@ import android.content.ContentResolver
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.shamilovstas.text_encrypt.notes.domain.EncryptedMessageMalformed
 import com.shamilovstas.text_encrypt.files.FileInteractor
 import com.shamilovstas.text_encrypt.notes.compose.CipherState
+import com.shamilovstas.text_encrypt.notes.domain.EncryptedMessageMalformed
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import com.shamilovstas.text_encrypt.notes.domain.NotesInteractor
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.crypto.BadPaddingException
 import javax.inject.Inject
 
 @HiltViewModel
-class ImportMessageViewModel @Inject constructor(
+class ComposeNoteViewModel @Inject constructor(
     private val notesInteractor: NotesInteractor,
     private val fileInteractor: FileInteractor
 ) : ViewModel() {
@@ -54,6 +56,12 @@ class ImportMessageViewModel @Inject constructor(
         } catch (e: BadPaddingException) {
             _effect.emit(ImportMessageScreenEffect.WrongPassword)
         }
+    }
+
+    fun loadNote(noteId: Int) = viewModelScope.launch {
+        val note = withContext(Dispatchers.IO) { notesInteractor.getNote(noteId) }
+        _state.value = _state.value.copy(content = note.content, description = note.description, cipherState = CipherState.Encrypted)
+        _effect.emit(ImportMessageScreenEffect.RequestPassword) // TODO previousPassword
     }
 
     fun saveNote(content: String, description: String = "") = viewModelScope.launch {

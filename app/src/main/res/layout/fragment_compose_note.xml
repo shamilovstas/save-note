@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:layout_height="match_parent">
 
 
     <com.google.android.material.appbar.AppBarLayout
@@ -19,23 +18,22 @@
             app:layout_scrollFlags="scroll|enterAlways" />
     </com.google.android.material.appbar.AppBarLayout>
 
-
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:layout_margin="8dp">
-
+        android:padding="8dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp">
+            android:layout_height="match_parent">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_edit_text"
                 style="@style/Widget.Material3.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -44,7 +42,9 @@
                     android:id="@+id/edit_text"
                     style="@style/EncryptedMessageEditText"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:gravity="top|start"
+                    tools:hint="@string/import_content_hint" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -53,10 +53,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:visibility="gone"
                 app:helperText="@string/optional_field"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/til_edit_text">
+                app:layout_constraintTop_toBottomOf="@id/til_edit_text"
+                tools:visibility="g">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/description_edit_text"
@@ -67,15 +69,41 @@
                     android:inputType="textMultiLine" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/compose_note_mains"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="til_edit_text, til_description_text" />
             <Button
-                android:id="@+id/save_button"
+                android:id="@+id/btn_decrypt_note"
+                android:layout_width="256dp"
+                android:layout_height="56dp"
+                android:layout_marginTop="16dp"
+                android:enabled="false"
+                android:text="@string/decrypt_note"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/compose_note_mains" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/group_import_controls"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="gone"
+                tools:visibility="visible"
+                app:constraint_referenced_ids="btn_save_imported_note" />
+
+            <Button
+                android:id="@+id/btn_save_imported_note"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@string/btn_process"
+                android:text="@string/save_imported_note"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/til_description_text" />
+                app:layout_constraintTop_toBottomOf="@id/compose_note_mains" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

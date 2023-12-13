@@ -8,65 +8,57 @@
 
     <fragment
         android:id="@+id/notes_list"
-        android:label="@string/title_notes_list"
         android:name="com.shamilovstas.text_encrypt.notes.list.NotesListFragment"
+        android:label="@string/title_notes_list"
         tools:layout="@layout/fragment_note_list">
 
         <action
-            android:id="@+id/action_from_list_to_compose"
+            android:id="@+id/action_from_list_to_note_detail"
             app:destination="@id/compose_note">
+
             <argument
                 android:name="note_id"
-                android:defaultValue="0" />
+                app:argType="integer" />
         </action>
 
         <action
-            android:id="@+id/action_from_list_to_import"
-            app:destination="@id/import_message">
-            <argument
-                android:name="note_id"
-                android:defaultValue="0" />
-        </action>
+            android:id="@+id/action_from_list_to_compose"
+            app:destination="@id/compose_note" />
     </fragment>
 
     <fragment
         android:id="@+id/compose_note"
+        android:name="com.shamilovstas.text_encrypt.importdata.ComposeNoteFragment"
         android:label="@string/title_compose_note"
-        android:name="com.shamilovstas.text_encrypt.importdata.ImportMessageFragment"
         tools:layout="@layout/fragment_compose_note">
         <argument
-            android:name="note_id"
-            android:defaultValue="0"
-            app:argType="integer" />
-        <argument
             android:name="key_mode"
-            app:argType="integer"/>
+            app:argType="integer" />
+
+        <action
+            android:id="@+id/action_from_message_import_to_note_list"
+            app:destination="@id/notes_list" />
     </fragment>
 
     <fragment
         android:id="@+id/import_dashboard"
-        android:label="@string/title_import"
         android:name="com.shamilovstas.text_encrypt.importdata.ImportDashboardFragment"
+        android:label="@string/title_import"
         tools:layout="@layout/fragment_import_dashboard">
 
         <action
-            android:id="@+id/action_from_import_dashboard_to_import_message"
-            app:destination="@id/import_message" />
-    </fragment>
+            android:id="@+id/action_from_import_dashboard_to_import_file"
+            app:destination="@id/compose_note">
+            <argument
+                android:name="fileUri"
+                android:defaultValue="@null"
+                app:argType="android.net.Uri"
+                app:nullable="true" />
+        </action>
 
-    <fragment
-        android:id="@+id/import_message"
-        android:label="@string/title_import_message"
-        android:name="com.shamilovstas.text_encrypt.importdata.ImportMessageFragment"
-        tools:layout="@layout/fragment_import_message">
         <action
-            android:id="@+id/action_from_message_import_to_list"
-            app:destination="@id/notes_list" />
-        <argument
-            android:name="fileUri"
-            app:argType="android.net.Uri"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            android:id="@+id/action_from_import_dashboard_to_import_message"
+            app:destination="@id/compose_note" />
     </fragment>
 
 </navigation>

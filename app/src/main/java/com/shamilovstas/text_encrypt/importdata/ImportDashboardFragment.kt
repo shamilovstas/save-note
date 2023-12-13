@@ -16,7 +16,7 @@ class ImportDashboardFragment : ToolbarFragment() {
 
     private val filePickLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) {
         findNavController().navigate(
-            R.id.action_from_import_dashboard_to_import_message, ImportMessageFragment.fileImportArgs(
+            R.id.action_from_import_dashboard_to_import_file, ComposeNoteFragment.fileImportArgs(
                 requireNotNull(it)
             )
         )
@@ -34,7 +34,7 @@ class ImportDashboardFragment : ToolbarFragment() {
 
     private fun initViews() = with(binding!!) {
         btnOpenImportMessage.setOnClickListener {
-            findNavController().navigate(R.id.action_from_import_dashboard_to_import_message)
+            findNavController().navigate(R.id.action_from_import_dashboard_to_import_file, ComposeNoteFragment.importMessageArgs())
         }
 
         btnOpenImportFile.setOnClickListener {

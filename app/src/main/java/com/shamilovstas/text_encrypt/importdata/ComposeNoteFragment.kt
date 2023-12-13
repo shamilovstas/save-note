@@ -15,22 +15,23 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.base.ToolbarFragment
-import com.shamilovstas.text_encrypt.databinding.FragmentImportMessageBinding
+import com.shamilovstas.text_encrypt.databinding.FragmentComposeNoteBinding
 import com.shamilovstas.text_encrypt.notes.compose.CipherState
 import com.shamilovstas.text_encrypt.showPasswordDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ImportMessageFragment : ToolbarFragment() {
+class ComposeNoteFragment : ToolbarFragment() {
 
-    private var binding: FragmentImportMessageBinding? = null
-    private val viewModel by viewModels<ImportMessageViewModel>()
+    private var binding: FragmentComposeNoteBinding? = null
+    private val viewModel by viewModels<ComposeNoteViewModel>()
 
     companion object {
 
         private const val KEY_FILE_URI = "fileUri"
         private const val KEY_MODE = "key_mode"
+        private const val KEY_NOTE_ID = "note_id"
         fun fileImportArgs(uri: Uri): Bundle {
             return bundleOf(
                 KEY_FILE_URI to uri,
@@ -41,7 +42,19 @@ class ImportMessageFragment : ToolbarFragment() {
         fun composeArgs(): Bundle {
             return bundleOf(KEY_MODE to CipherState.Decrypted.ordinal)
         }
+
+        fun importMessageArgs(): Bundle {
+            return bundleOf(KEY_MODE to CipherState.Encrypted.ordinal)
+        }
+
+        fun loadByIdArgs(noteId: Int): Bundle {
+            return bundleOf(
+                KEY_MODE to CipherState.Encrypted.ordinal,
+                KEY_NOTE_ID to noteId
+            )
+        }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -51,15 +64,23 @@ class ImportMessageFragment : ToolbarFragment() {
 
         val cipherMode = CipherState.entries[requireArguments().getInt(KEY_MODE)]
         viewModel.setCipherMode(cipherMode)
-        val fileUri = arguments?.getParcelable<Uri>(KEY_FILE_URI)
 
-        if (fileUri != null) {
-            viewModel.import(fileUri, requireActivity().contentResolver)
+        when {
+            requireArguments().containsKey(KEY_FILE_URI) -> {
+                val fileUri = requireArguments().getParcelable<Uri>(KEY_FILE_URI)!!
+                viewModel.import(fileUri, requireActivity().contentResolver)
+            }
+
+            requireArguments().containsKey(KEY_NOTE_ID) -> {
+                val noteId = requireArguments().getInt(KEY_NOTE_ID)
+                viewModel.loadNote(noteId)
+            }
         }
+
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = FragmentImportMessageBinding.inflate(inflater, container, false)
+        binding = FragmentComposeNoteBinding.inflate(inflater, container, false)
         return binding!!.root
     }
 
@@ -103,25 +124,30 @@ class ImportMessageFragment : ToolbarFragment() {
     }
 
     private fun effect(effect: ImportMessageScreenEffect) {
-        when(effect) {
+        when (effect) {
             is ImportMessageScreenEffect.ComposeComplete -> {
                 findNavController().navigateUp()
             }
+
             is ImportMessageScreenEffect.RequestPassword -> {
                 childFragmentManager.showPasswordDialog(
                     this,
                     "password_dialog",
-                    onResult = {viewModel.onPasswordEntered(it)})
+                    onResult = { viewModel.onPasswordEntered(it) })
             }
+
             is ImportMessageScreenEffect.NoteSavedMessage -> {
                 Snackbar.make(binding!!.root, R.string.note_saved, Snackbar.LENGTH_SHORT).show()
             }
+
             is ImportMessageScreenEffect.ReturnToNoteList -> {
-                findNavController().navigate(R.id.action_from_message_import_to_list)
+                findNavController().navigate(R.id.action_from_message_import_to_note_list)
             }
+
             is ImportMessageScreenEffect.WrongPassword -> {
                 Snackbar.make(binding!!.root, R.string.wrong_password, Snackbar.LENGTH_SHORT).show()
             }
+
             is ImportMessageScreenEffect.MalformedEncryptedMessage -> {
                 Snackbar.make(binding!!.root, R.string.message_malformed, Snackbar.LENGTH_SHORT).show()
             }
@@ -140,8 +166,11 @@ class ImportMessageFragment : ToolbarFragment() {
             tilDescriptionText.visibility = View.VISIBLE
         }
 
-        if (state.content != null) {
+        if (state.content != null && state.content != editText.text?.toString()) {
             editText.setText(state.content)
+        }
+        if (state.description != descriptionEditText.text?.toString()) {
+            descriptionEditText.setText(state.description)
         }
     }
 

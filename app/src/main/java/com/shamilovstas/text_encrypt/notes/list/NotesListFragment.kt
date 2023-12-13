@@ -1,12 +1,10 @@
 package com.shamilovstas.text_encrypt.notes.list
 
-import android.content.ContentResolver.MimeTypeInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -16,7 +14,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.base.ToolbarFragment
 import com.shamilovstas.text_encrypt.databinding.FragmentNoteListBinding
-import com.shamilovstas.text_encrypt.importdata.ImportMessageFragment
+import com.shamilovstas.text_encrypt.importdata.ComposeNoteFragment
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -49,7 +47,7 @@ class NotesListFragment : ToolbarFragment() {
     }
 
     private fun onClickNoteItem(note: Note) {
-        findNavController().navigate(R.id.action_from_list_to_compose, bundleOf("note_id" to note.id))
+        findNavController().navigate(R.id.action_from_list_to_note_detail, ComposeNoteFragment.loadByIdArgs(note.id))
     }
 
     private fun onClickDeleteNoteItem(item: Note) {
@@ -102,7 +100,7 @@ class NotesListFragment : ToolbarFragment() {
     }
 
     private fun navigateToComposeNoteScreen() {
-        findNavController().navigate(R.id.action_from_list_to_compose, ImportMessageFragment.composeArgs())
+        findNavController().navigate(R.id.action_from_list_to_compose, ComposeNoteFragment.composeArgs())
     }
 
     private fun render(state: NotesListScreenState) = with(binding!!) {

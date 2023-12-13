@@ -14,7 +14,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.base.ToolbarFragment
 import com.shamilovstas.text_encrypt.databinding.FragmentNoteListBinding
-import com.shamilovstas.text_encrypt.importdata.ComposeNoteFragment
+import com.shamilovstas.text_encrypt.notes.compose.ComposeNoteFragment
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch

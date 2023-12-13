@@ -1,11 +1,10 @@
-package com.shamilovstas.text_encrypt.importdata
+package com.shamilovstas.text_encrypt.notes.compose
 
 import android.content.ContentResolver
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shamilovstas.text_encrypt.files.FileInteractor
-import com.shamilovstas.text_encrypt.notes.compose.CipherState
 import com.shamilovstas.text_encrypt.notes.domain.EncryptedMessageMalformed
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import com.shamilovstas.text_encrypt.notes.domain.NotesInteractor
@@ -29,8 +28,8 @@ class ComposeNoteViewModel @Inject constructor(
     private val _effect = MutableSharedFlow<ImportMessageScreenEffect>()
     val effect: SharedFlow<ImportMessageScreenEffect> = _effect
 
-    private val _state = MutableStateFlow(ImportMessageScreenState())
-    val state: StateFlow<ImportMessageScreenState> = _state
+    private val _state = MutableStateFlow(ComposeNoteScreenState())
+    val state: StateFlow<ComposeNoteScreenState> = _state
 
     fun onPasswordEntered(password: String) = viewModelScope.launch {
         val cipherState = state.value.cipherState

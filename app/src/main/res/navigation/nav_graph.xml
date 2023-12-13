@@ -28,7 +28,7 @@
 
     <fragment
         android:id="@+id/compose_note"
-        android:name="com.shamilovstas.text_encrypt.importdata.ComposeNoteFragment"
+        android:name="com.shamilovstas.text_encrypt.notes.compose.ComposeNoteFragment"
         android:label="@string/title_compose_note"
         tools:layout="@layout/fragment_compose_note">
         <argument

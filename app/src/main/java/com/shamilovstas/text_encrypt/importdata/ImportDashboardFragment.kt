@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.base.ToolbarFragment
 import com.shamilovstas.text_encrypt.databinding.FragmentImportDashboardBinding
+import com.shamilovstas.text_encrypt.notes.compose.ComposeNoteFragment
 
 class ImportDashboardFragment : ToolbarFragment() {
 

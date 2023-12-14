@@ -8,7 +8,8 @@ data class Note(
     val content: String = "",
     val isPublished: Boolean = false,
     val createdDate: OffsetDateTime? = null,
-    val description: String = ""
+    val description: String = "",
+    val attachments: List<Attachment> = listOf()
 )
 
 fun NoteEntity.toModel(): Note {

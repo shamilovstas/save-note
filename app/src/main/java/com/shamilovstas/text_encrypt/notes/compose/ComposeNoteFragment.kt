@@ -186,7 +186,7 @@ class ComposeNoteFragment : ToolbarFragment() {
         if (state.note.description != descriptionEditText.text?.toString()) {
             descriptionEditText.setText(state.note.description)
         }
-        attachmentsAdapter.submitList(state.attachments)
+        attachmentsAdapter.submitList(state.note.attachments)
     }
 
     override fun onDestroyView() {

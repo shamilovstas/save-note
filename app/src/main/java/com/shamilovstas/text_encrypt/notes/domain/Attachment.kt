@@ -4,5 +4,6 @@ import android.net.Uri
 
 data class Attachment(
     val uri: Uri,
-    val filename: String
+    val filename: String,
+    val isEncrypted: Boolean = false
 )

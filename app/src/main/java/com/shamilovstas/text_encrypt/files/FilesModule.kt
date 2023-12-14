@@ -1,5 +1,6 @@
 package com.shamilovstas.text_encrypt.files
 
+import android.content.ContentResolver
 import android.content.Context
 import dagger.Module
 import dagger.Provides
@@ -16,5 +17,10 @@ class FilesModule {
     @InternalFilesDir
     fun provideBaseDir(@ApplicationContext context: Context): File {
         return context.filesDir
+    }
+
+    @Provides
+    fun provideContentResolver(@ApplicationContext context: Context): ContentResolver {
+        return context.contentResolver
     }
 }

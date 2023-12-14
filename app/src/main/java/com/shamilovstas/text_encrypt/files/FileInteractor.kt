@@ -2,6 +2,7 @@ package com.shamilovstas.text_encrypt.files
 
 import android.util.Log
 import androidx.annotation.WorkerThread
+import com.shamilovstas.text_encrypt.files.FileRepository.Companion.FILENAME_FROM_DATE_FORMATTER
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import java.io.File
 import java.io.InputStream
@@ -23,7 +24,6 @@ class FileInteractor @Inject constructor(
 ) {
 
     companion object {
-        private val FILENAME_FROM_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyymmdd_hhmmss")
         private const val TAG = "FileInteractor"
         const val NOTE_FILE_EXTENSION = "encn"
     }

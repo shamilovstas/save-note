@@ -9,7 +9,8 @@
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        tools:visibility="gone">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -57,8 +58,7 @@
                 app:helperText="@string/optional_field"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/til_edit_text"
-                tools:visibility="g">
+                app:layout_constraintTop_toBottomOf="@id/til_edit_text">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/description_edit_text"
@@ -76,34 +76,60 @@
                 android:orientation="horizontal"
                 app:barrierDirection="bottom"
                 app:constraint_referenced_ids="til_edit_text, til_description_text" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_attachments"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toEndOf="@id/btn_add_attachment"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/compose_note_mains"
+                tools:listitem="@layout/item_attachment" />
+
+            <ImageButton
+                android:id="@+id/btn_add_attachment"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/baseline_add_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/rv_attachments"
+                app:layout_constraintTop_toTopOf="@id/rv_attachments"
+                app:layout_constraintBottom_toBottomOf="@id/rv_attachments" />
+
+            <androidx.constraintlayout.widget.Barrier
+                android:id="@+id/compose_note_attachments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:barrierDirection="bottom"
+                app:constraint_referenced_ids="rv_attachments, til_edit_text, til_description_text" />
+
             <Button
                 android:id="@+id/btn_decrypt_note"
                 android:layout_width="256dp"
                 android:layout_height="56dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:enabled="false"
                 android:text="@string/decrypt_note"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/compose_note_mains" />
-
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/group_import_controls"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:visibility="gone"
-                tools:visibility="visible"
-                app:constraint_referenced_ids="btn_save_imported_note" />
+                app:layout_constraintTop_toBottomOf="@id/compose_note_attachments" />
 
             <Button
                 android:id="@+id/btn_save_imported_note"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:text="@string/save_imported_note"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/compose_note_mains" />
+                app:layout_constraintTop_toBottomOf="@id/compose_note_attachments" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

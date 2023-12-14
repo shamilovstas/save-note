@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
@@ -17,6 +18,7 @@ import com.shamilovstas.text_encrypt.PasswordDialog
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.base.ToolbarFragment
 import com.shamilovstas.text_encrypt.databinding.FragmentComposeNoteBinding
+import com.shamilovstas.text_encrypt.notes.domain.Attachment
 import com.shamilovstas.text_encrypt.showPasswordDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -26,6 +28,11 @@ class ComposeNoteFragment : ToolbarFragment() {
 
     private var binding: FragmentComposeNoteBinding? = null
     private val viewModel by viewModels<ComposeNoteViewModel>()
+    private val attachmentsAdapter = AttachmentAdapter()
+    private val pickFile = registerForActivityResult(ActivityResultContracts.OpenDocument()) {uri ->
+        if (uri == null) return@registerForActivityResult
+        viewModel.addAttachment(uri, requireActivity().contentResolver)
+    }
 
     companion object {
 
@@ -90,6 +97,12 @@ class ComposeNoteFragment : ToolbarFragment() {
     }
 
     private fun initViews() = with(binding!!) {
+
+        rvAttachments.adapter = attachmentsAdapter
+
+        btnAddAttachment.setOnClickListener {
+            pickFile.launch(arrayOf("*/*"))
+        }
 
         editText.doAfterTextChanged {
             btnDecryptNote.isEnabled = !it.isNullOrEmpty()
@@ -159,11 +172,11 @@ class ComposeNoteFragment : ToolbarFragment() {
     private fun render(state: ComposeNoteScreenState) = with(binding!!) {
         if (state.cipherState == CipherState.Encrypted) {
             btnDecryptNote.visibility = View.VISIBLE
-            groupImportControls.visibility = View.GONE
+            btnSaveImportedNote.visibility = View.GONE
             tilEditText.hint = getString(R.string.import_content_hint)
         } else {
             btnDecryptNote.visibility = View.GONE
-            groupImportControls.visibility = View.VISIBLE
+            btnSaveImportedNote.visibility = View.VISIBLE
             tilEditText.hint = getString(R.string.enter_message)
             tilDescriptionText.visibility = View.VISIBLE
         }
@@ -174,6 +187,7 @@ class ComposeNoteFragment : ToolbarFragment() {
         if (state.description != descriptionEditText.text?.toString()) {
             descriptionEditText.setText(state.description)
         }
+        attachmentsAdapter.submitList(state.attachments)
     }
 
     override fun onDestroyView() {

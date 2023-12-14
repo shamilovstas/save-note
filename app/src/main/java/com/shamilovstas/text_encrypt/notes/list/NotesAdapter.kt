@@ -22,7 +22,7 @@ class NotesAdapter(
     DIFF_CALLBACK
 ) {
     companion object {
-        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Note>() {
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Note>() {
             override fun areItemsTheSame(oldItem: Note, newItem: Note): Boolean {
                 return oldItem.id == newItem.id
             }

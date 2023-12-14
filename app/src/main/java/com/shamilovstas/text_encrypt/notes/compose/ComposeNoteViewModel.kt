@@ -5,15 +5,18 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shamilovstas.text_encrypt.files.FileInteractor
+import com.shamilovstas.text_encrypt.notes.domain.Attachment
 import com.shamilovstas.text_encrypt.notes.domain.EncryptedMessageMalformed
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import com.shamilovstas.text_encrypt.notes.domain.NotesInteractor
+import com.shamilovstas.text_encrypt.utils.getFilename
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.crypto.BadPaddingException
@@ -101,6 +104,11 @@ class ComposeNoteViewModel @Inject constructor(
 
     fun setCipherMode(cipherMode: CipherState) {
         _state.value = _state.value.copy(cipherState = cipherMode)
+    }
+
+    fun addAttachment(uri: Uri, contentResolver: ContentResolver) {
+        val attachment = Attachment(uri, uri.getFilename(contentResolver))
+        _state.update { it.copy(attachments = it.attachments + attachment) }
     }
 }
 

@@ -18,7 +18,6 @@ import com.shamilovstas.text_encrypt.PasswordDialog
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.base.ToolbarFragment
 import com.shamilovstas.text_encrypt.databinding.FragmentComposeNoteBinding
-import com.shamilovstas.text_encrypt.notes.domain.Attachment
 import com.shamilovstas.text_encrypt.showPasswordDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -181,11 +180,11 @@ class ComposeNoteFragment : ToolbarFragment() {
             tilDescriptionText.visibility = View.VISIBLE
         }
 
-        if (state.content != null && state.content != editText.text?.toString()) {
-            editText.setText(state.content)
+        if (state.note.content != editText.text?.toString()) {
+            editText.setText(state.note.content)
         }
-        if (state.description != descriptionEditText.text?.toString()) {
-            descriptionEditText.setText(state.description)
+        if (state.note.description != descriptionEditText.text?.toString()) {
+            descriptionEditText.setText(state.note.description)
         }
         attachmentsAdapter.submitList(state.attachments)
     }

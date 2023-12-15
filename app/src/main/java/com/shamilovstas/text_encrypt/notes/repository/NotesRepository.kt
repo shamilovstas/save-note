@@ -6,9 +6,11 @@ import javax.inject.Inject
 class NotesRepository @Inject constructor(
     private val notesDao: NotesDao
 ) {
-    suspend fun saveNote(entity: NoteEntity) {
-        notesDao.insert(entity)
+
+    suspend fun saveNote(entity: NoteWithAttachments): NoteWithAttachments {
+        return notesDao.insertNote(entity)
     }
+
     fun getAllNotes(): Flow<List<NoteEntity>> {
         return notesDao.getAllNotes();
     }

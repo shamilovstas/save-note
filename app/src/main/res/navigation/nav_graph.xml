@@ -18,7 +18,7 @@
 
             <argument
                 android:name="note_id"
-                app:argType="integer" />
+                app:argType="long" />
         </action>
 
         <action

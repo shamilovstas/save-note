@@ -62,7 +62,7 @@ class ComposeNoteFragment : ToolbarFragment() {
             return bundleOf(KEY_MODE to CipherState.Encrypted.ordinal)
         }
 
-        fun loadByIdArgs(noteId: Int): Bundle {
+        fun loadByIdArgs(noteId: Long): Bundle {
             return bundleOf(
                 KEY_MODE to CipherState.Encrypted.ordinal,
                 KEY_NOTE_ID to noteId

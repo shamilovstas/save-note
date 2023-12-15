@@ -4,7 +4,7 @@ import com.shamilovstas.text_encrypt.notes.repository.NoteEntity
 import java.time.OffsetDateTime
 
 data class Note(
-    val id: Int = 0,
+    val id: Long = 0,
     val content: String = "",
     val isPublished: Boolean = false,
     val createdDate: OffsetDateTime? = null,

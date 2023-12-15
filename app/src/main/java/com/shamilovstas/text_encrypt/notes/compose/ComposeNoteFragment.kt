@@ -19,8 +19,11 @@ import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.base.ToolbarFragment
 import com.shamilovstas.text_encrypt.databinding.FragmentComposeNoteBinding
 import com.shamilovstas.text_encrypt.showPasswordDialog
+import com.shamilovstas.text_encrypt.utils.getFilename
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @AndroidEntryPoint
 class ComposeNoteFragment : ToolbarFragment() {
@@ -28,6 +31,12 @@ class ComposeNoteFragment : ToolbarFragment() {
     private var binding: FragmentComposeNoteBinding? = null
     private val viewModel by viewModels<ComposeNoteViewModel>()
     private val attachmentsAdapter = AttachmentAdapter()
+
+    private val createDocument = registerForActivityResult(ActivityResultContracts.CreateDocument("*/*")) {
+        requireNotNull(it)
+        // TODO save to downloads
+    }
+
     private val pickFile = registerForActivityResult(ActivityResultContracts.OpenDocument()) {uri ->
         if (uri == null) return@registerForActivityResult
         viewModel.addAttachment(uri, requireActivity().contentResolver)

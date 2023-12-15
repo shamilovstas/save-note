@@ -1,5 +1,6 @@
 package com.shamilovstas.text_encrypt.notes.compose
 
+import android.app.DownloadManager
 import android.content.ContentResolver
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -7,25 +8,30 @@ import androidx.lifecycle.viewModelScope
 import com.shamilovstas.text_encrypt.files.FileInteractor
 import com.shamilovstas.text_encrypt.notes.domain.Attachment
 import com.shamilovstas.text_encrypt.notes.domain.EncryptedMessageMalformed
+import com.shamilovstas.text_encrypt.notes.domain.FileEncryptor
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import com.shamilovstas.text_encrypt.notes.domain.NotesInteractor
 import com.shamilovstas.text_encrypt.utils.getFilename
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import javax.crypto.BadPaddingException
 import javax.inject.Inject
+import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
 class ComposeNoteViewModel @Inject constructor(
     private val notesInteractor: NotesInteractor,
-    private val fileInteractor: FileInteractor
+    private val fileInteractor: FileInteractor,
+    private val fencryptor: FileEncryptor
 ) : ViewModel() {
 
     private val _effect = MutableSharedFlow<ImportMessageScreenEffect>()
@@ -97,6 +103,29 @@ class ComposeNoteViewModel @Inject constructor(
     fun setCipherMode(cipherMode: CipherState) {
         _state.update { it.copy(cipherState = cipherMode) }
     }
+
+/*    @OptIn(ExperimentalCoroutinesApi::class)
+    fun saveToDownloads(outputFile: Uri, contentResolver: ContentResolver) = viewModelScope.launch {
+        suspendCancellableCoroutine<Unit> {
+            contentResolver.openOutputStream(outputFile).use { output ->
+                requireNotNull(output)
+                contentResolver.openInputStream(requireNotNull(encrUri)).use { input ->
+                    requireNotNull(input)
+
+                    val buffer = ByteArray(1024)
+
+                    var readBytes = 0
+
+                    do {
+                        readBytes = input.read(buffer)
+                        output.write(buffer)
+                    } while (readBytes != -1)
+                }
+            }
+            it.resume(Unit) {}
+        }
+    }*/
+
 
     fun addAttachment(uri: Uri, contentResolver: ContentResolver) {
         val note = state.value.note

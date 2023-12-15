@@ -1,5 +1,7 @@
 package com.shamilovstas.text_encrypt.files
 
+import android.os.Environment
+import android.util.Log
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -15,7 +17,7 @@ class FileRepository @Inject constructor(
         val FILENAME_FROM_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyymmdd_hhmmss")
     }
 
-    fun createOutputFile(originalFilename: String): File {
+    fun createEncryptedFile(originalFilename: String): File {
         val filenameParts = originalFilename.split('.')
         val basename = filenameParts.first()
         val extension = filenameParts.drop(1).joinToString(separator = ".") { it }
@@ -31,5 +33,21 @@ class FileRepository @Inject constructor(
         }
 
         return outputFile
+    }
+
+    fun createDecryptedFile(encryptedFilename: String): File {
+        Log.d("FileRepository", "encryptedFilename: $encryptedFilename")
+
+        val parts = encryptedFilename.split(".").dropLast(1)
+        var suffix: String? = null
+
+        val filename = parts.first()
+
+        if (parts.size > 1) {
+            suffix = parts.drop(1).joinToString(separator = ".") { it }
+        }
+
+        val temp = File.createTempFile(filename, suffix)
+        return temp
     }
 }

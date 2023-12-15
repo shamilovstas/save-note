@@ -63,7 +63,7 @@ class ComposeNoteViewModel @Inject constructor(
         }
     }
 
-    fun loadNote(noteId: Int) = viewModelScope.launch {
+    fun loadNote(noteId: Long) = viewModelScope.launch {
         val note = withContext(Dispatchers.IO) { notesInteractor.getNote(noteId) }
         _state.update { it.copy(note = note, cipherState = CipherState.Encrypted) }
         _effect.emit(ImportMessageScreenEffect.RequestPassword(state.value.previousPassword))

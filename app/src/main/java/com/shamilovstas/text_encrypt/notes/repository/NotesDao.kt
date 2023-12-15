@@ -29,8 +29,10 @@ abstract class NotesDao {
     @Update
     abstract fun update(entity: NoteEntity)
 
-    @Query("SELECT id, content, is_published, created_date, description FROM notes WHERE id=:noteId")
-    abstract fun getNoteById(noteId: Int): NoteEntity
+//    @Query("SELECT notes.id, content, is_published, created_date, description FROM notes INNER JOIN attachments ON notes.id=attachments.note_id WHERE notes.id=:noteId")
+    @Transaction
+    @Query("SELECT * FROM notes WHERE notes.id=:noteId")
+    abstract fun getNoteById(noteId: Long): NoteWithAttachments
 
     @Transaction
     open suspend fun insertNote(entity: NoteWithAttachments): NoteWithAttachments {

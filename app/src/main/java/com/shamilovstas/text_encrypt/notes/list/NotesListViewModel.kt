@@ -61,8 +61,8 @@ class NotesListViewModel @Inject constructor(
         if (!savedStateHandle.contains(NOTE_EXPORT_KEY)) {
             throw IllegalStateException("No saved note to export")
         }
-        val id: Int = savedStateHandle[NOTE_EXPORT_KEY]!!
-        savedStateHandle.remove<Int>(NOTE_EXPORT_KEY)
+        val id: Long = savedStateHandle[NOTE_EXPORT_KEY]!!
+        savedStateHandle.remove<Long>(NOTE_EXPORT_KEY)
 
         withContext(Dispatchers.IO) {
             val note = notesInteractor.getNote(id)

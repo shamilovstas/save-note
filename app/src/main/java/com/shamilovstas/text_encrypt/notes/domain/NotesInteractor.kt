@@ -52,13 +52,27 @@ class NotesInteractor @Inject constructor(
         return encryptedUris
     }
 
+    //TODO add parallel computation
+    private fun decryptAttachments(attachments: List<Attachment>, password: String): List<Attachment> {
+        val encryptedUris = mutableListOf<Attachment>()
+        for (attachment in attachments) {
+            Log.d("NotesInteractor", "decrypting attachment '${attachment.filename}'...")
+            val encryptedFileUri = fileEncryptor.decrypt(attachment.uri, password)
+            encryptedUris.add(attachment.copy(uri = encryptedFileUri, isEncrypted = false))
+        }
+        return encryptedUris
+    }
+
     fun decrypt(note: Note, password: String): Note {
         val decryptedContent = encryptor.decrypt(note.content, password)
-        val newNote = note.copy(content = decryptedContent)
+
+        val attachments = decryptAttachments(note.attachments, password)
+        val newNote = note.copy(content = decryptedContent, attachments = attachments)
         return newNote
     }
 
-    suspend fun getNote(id: Int): Note {
+    suspend fun getNote(id: Long): Note {
+        Log.d("NotesInteractor", "querying note with id $id")
         val noteEntity = repository.getNoteById(id)
         val note = noteEntity.toModel()
         return note

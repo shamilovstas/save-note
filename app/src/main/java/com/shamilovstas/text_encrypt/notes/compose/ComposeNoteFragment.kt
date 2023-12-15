@@ -87,7 +87,7 @@ class ComposeNoteFragment : ToolbarFragment() {
             }
 
             requireArguments().containsKey(KEY_NOTE_ID) -> {
-                val noteId = requireArguments().getInt(KEY_NOTE_ID)
+                val noteId = requireArguments().getLong(KEY_NOTE_ID)
                 viewModel.loadNote(noteId)
             }
         }

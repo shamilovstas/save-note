@@ -23,7 +23,7 @@ class NotesRepository @Inject constructor(
         notesDao.delete(note)
     }
 
-    suspend fun getNoteById(noteId: Int): NoteEntity {
+    suspend fun getNoteById(noteId: Long): NoteWithAttachments {
         return notesDao.getNoteById(noteId)
     }
 }

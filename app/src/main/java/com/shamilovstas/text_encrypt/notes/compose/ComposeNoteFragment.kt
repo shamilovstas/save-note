@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -87,7 +88,7 @@ class ComposeNoteFragment : ToolbarFragment() {
             }
 
             requireArguments().containsKey(KEY_NOTE_ID) -> {
-                val noteId = requireArguments().getInt(KEY_NOTE_ID)
+                val noteId = requireArguments().getLong(KEY_NOTE_ID)
                 viewModel.loadNote(noteId)
             }
         }
@@ -178,6 +179,7 @@ class ComposeNoteFragment : ToolbarFragment() {
     }
 
     private fun render(state: ComposeNoteScreenState) = with(binding!!) {
+        btnAddAttachment.isVisible = state.canAddAttachments
         if (state.cipherState == CipherState.Encrypted) {
             btnDecryptNote.visibility = View.VISIBLE
             btnSaveImportedNote.visibility = View.GONE

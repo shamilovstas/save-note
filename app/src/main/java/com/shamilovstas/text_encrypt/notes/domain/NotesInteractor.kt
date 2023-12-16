@@ -26,7 +26,6 @@ class NotesInteractor @Inject constructor(
         var content = note.content
         var attachments = note.attachments
         if (password != null) {
-            Log.d("NotesInteractor", "encrypting note with description: '${note.description}'...")
             content = encryptor.encrypt(note.content, password)
             attachments = encryptAttachments(note.attachments, password)
         }
@@ -45,20 +44,31 @@ class NotesInteractor @Inject constructor(
     private fun encryptAttachments(attachments: List<Attachment>, password: String): List<Attachment> {
         val encryptedUris = mutableListOf<Attachment>()
         for (attachment in attachments) {
-            Log.d("NotesInteractor", "encrypting attachment '${attachment.filename}'...")
             val encryptedFileUri = fileEncryptor.encrypt(attachment.uri, password)
             encryptedUris.add(attachment.copy(uri = encryptedFileUri, isEncrypted = true))
         }
         return encryptedUris
     }
 
+    //TODO add parallel computation
+    private fun decryptAttachments(attachments: List<Attachment>, password: String): List<Attachment> {
+        val encryptedUris = mutableListOf<Attachment>()
+        for (attachment in attachments) {
+            val encryptedFileUri = fileEncryptor.decrypt(attachment.uri, password)
+            encryptedUris.add(attachment.copy(uri = encryptedFileUri, isEncrypted = false))
+        }
+        return encryptedUris
+    }
+
     fun decrypt(note: Note, password: String): Note {
         val decryptedContent = encryptor.decrypt(note.content, password)
-        val newNote = note.copy(content = decryptedContent)
+
+        val attachments = decryptAttachments(note.attachments, password)
+        val newNote = note.copy(content = decryptedContent, attachments = attachments)
         return newNote
     }
 
-    suspend fun getNote(id: Int): Note {
+    suspend fun getNote(id: Long): Note {
         val noteEntity = repository.getNoteById(id)
         val note = noteEntity.toModel()
         return note

@@ -6,5 +6,7 @@ data class ComposeNoteScreenState(
     val note: Note = Note(content = "", description = ""),
     override val cipherState: CipherState = CipherState.Encrypted,
     val isDecryptionPossible: Boolean = false,
-    val previousPassword: String? = null,
-) : CipherScreenState
+    val previousPassword: String? = null
+) : CipherScreenState {
+    val canAddAttachments get() = cipherState == CipherState.Decrypted
+}

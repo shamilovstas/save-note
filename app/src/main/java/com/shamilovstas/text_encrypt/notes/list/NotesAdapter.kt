@@ -18,7 +18,8 @@ class NotesAdapter(
     private val onClickListener: (Note) -> Unit = {},
     private val onDeleteClickListener: (Note) -> Unit = {},
     private val onShareClickListener: (Note) -> Unit = {},
-    private val onCopyClickListener: (Note) -> Unit = {}) : ListAdapter<Note, NotesAdapter.NoteViewHolder>(
+    private val onCopyClickListener: (Note) -> Unit = {}
+) : ListAdapter<Note, NotesAdapter.NoteViewHolder>(
     DIFF_CALLBACK
 ) {
     companion object {
@@ -86,7 +87,9 @@ class NotesAdapter(
                 R.drawable.cloud
             }
             binding.ivPublished.setImageDrawable(ContextCompat.getDrawable(binding.root.context, publishedIconRes))
-            binding.tvAttachmentsCount.text = itemView.context.getString(R.string.note_attachments_count, 25) // TODO change to actual attachments count
+
+            val attachmentsCount = note.attachments.size
+            binding.tvAttachmentsCount.text = itemView.context.getString(R.string.note_attachments_count, attachmentsCount)
             if (note.description.isNotEmpty()) {
                 binding.tvNoteDescription.visibility = View.VISIBLE
                 binding.tvNoteDescription.text = note.description

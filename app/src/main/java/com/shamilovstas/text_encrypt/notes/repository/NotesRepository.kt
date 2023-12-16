@@ -11,7 +11,7 @@ class NotesRepository @Inject constructor(
         return notesDao.insertNote(entity)
     }
 
-    fun getAllNotes(): Flow<List<NoteEntity>> {
+    fun getAllNotes(): Flow<List<NoteWithAttachments>> {
         return notesDao.getAllNotes();
     }
 

@@ -20,8 +20,8 @@ abstract class NotesDao {
 /*    @Insert(onConflict = REPLACE)
     abstract fun insertNote(entities: List<NoteEntity>)*/
 
-    @Query("SELECT id, content, is_published, created_date, description FROM notes ORDER BY created_date DESC")
-    abstract fun getAllNotes(): Flow<List<NoteEntity>>
+    @Query("SELECT * FROM notes ORDER BY created_date DESC")
+    abstract fun getAllNotes(): Flow<List<NoteWithAttachments>>
 
     @Delete
     abstract fun delete(entity: NoteEntity)

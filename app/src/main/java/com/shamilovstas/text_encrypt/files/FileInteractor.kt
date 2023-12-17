@@ -2,12 +2,10 @@ package com.shamilovstas.text_encrypt.files
 
 import android.content.ContentResolver
 import androidx.annotation.WorkerThread
-import com.shamilovstas.text_encrypt.files.FileRepository.Companion.FILENAME_FROM_DATE_FORMATTER
 import com.shamilovstas.text_encrypt.notes.domain.Attachment
 import com.shamilovstas.text_encrypt.notes.domain.Note
+import com.shamilovstas.text_encrypt.notes.repository.AttachmentStorageRepository.Companion.FILENAME_FROM_DATE_FORMATTER
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
@@ -25,7 +23,6 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 @OptIn(ExperimentalEncodingApi::class)
 @Singleton
 class FileInteractor @Inject constructor(
-    @InternalFilesDir private val baseDir: File,
     private val contentResolver: ContentResolver
 ) {
 

@@ -1,9 +1,7 @@
 package com.shamilovstas.text_encrypt.notes.domain
 
-import android.util.Log
-import com.shamilovstas.text_encrypt.notes.repository.NoteWithAttachments
+import com.shamilovstas.text_encrypt.notes.repository.AttachmentStorageRepository
 import com.shamilovstas.text_encrypt.notes.repository.NotesRepository
-import com.shamilovstas.text_encrypt.notes.repository.toEntity
 import com.shamilovstas.text_encrypt.notes.repository.toModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -14,8 +12,8 @@ import javax.inject.Singleton
 @Singleton
 class NotesInteractor @Inject constructor(
     private val encryptor: TextEncryptor,
-    private val fileEncryptor: FileEncryptor,
-    private val repository: NotesRepository
+    private val repository: NotesRepository,
+    private val attachmentStorageRepository: AttachmentStorageRepository
 ) {
 
     suspend fun save(note: Note, password: String? = null): Note {
@@ -25,45 +23,25 @@ class NotesInteractor @Inject constructor(
 
         var content = note.content
         var attachments = note.attachments
+        val date = note.createdDate ?: OffsetDateTime.now()
+
         if (password != null) {
             content = encryptor.encrypt(note.content, password)
-            attachments = encryptAttachments(note.attachments, password)
         }
+        val encryptedNote = repository.saveNote(note.copy(content = content, createdDate = date))
 
+        if (password != null) {
+            attachments = attachmentStorageRepository.encryptNoteAttachments(encryptedNote, password)
+        }
+        repository.saveAttachments(attachments)
 
-        val date = note.createdDate ?: OffsetDateTime.now()
-        val newNote = note.copy(content = content, attachments = attachments, createdDate = date)
-        val noteEntity = newNote.toEntity()
-        val attachmentEntities = newNote.attachments.map { it.toEntity() }
-        val groupedEntity = NoteWithAttachments(noteEntity, attachmentEntities)
-        return repository.saveNote(groupedEntity).toModel()
+        return encryptedNote.copy(attachments = attachments)
     }
 
-
-    //TODO add parallel computation
-    private fun encryptAttachments(attachments: List<Attachment>, password: String): List<Attachment> {
-        val encryptedUris = mutableListOf<Attachment>()
-        for (attachment in attachments) {
-            val encryptedFileUri = fileEncryptor.encrypt(attachment.uri, password)
-            encryptedUris.add(attachment.copy(uri = encryptedFileUri, isEncrypted = true))
-        }
-        return encryptedUris
-    }
-
-    //TODO add parallel computation
-    private fun decryptAttachments(attachments: List<Attachment>, password: String): List<Attachment> {
-        val encryptedUris = mutableListOf<Attachment>()
-        for (attachment in attachments) {
-            val encryptedFileUri = fileEncryptor.decrypt(attachment.uri, password)
-            encryptedUris.add(attachment.copy(uri = encryptedFileUri, isEncrypted = false))
-        }
-        return encryptedUris
-    }
-
-    fun decrypt(note: Note, password: String): Note {
+    suspend fun decrypt(note: Note, password: String): Note {
         val decryptedContent = encryptor.decrypt(note.content, password)
 
-        val attachments = decryptAttachments(note.attachments, password)
+        val attachments = attachmentStorageRepository.decryptAttachments(note, password)
         val newNote = note.copy(content = decryptedContent, attachments = attachments)
         return newNote
     }

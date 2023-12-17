@@ -2,8 +2,8 @@ package com.shamilovstas.text_encrypt.database
 
 import android.content.Context
 import androidx.room.Room
+import com.shamilovstas.text_encrypt.notes.repository.AttachmentStorageDao
 import com.shamilovstas.text_encrypt.notes.repository.NotesDao
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,7 +20,12 @@ class DatabaseModule {
     }
 
     @Provides
-    fun bindNotesDao(appDatabase: AppDatabase): NotesDao {
+    fun provideAttachmentStorageDao(appDatabase: AppDatabase): AttachmentStorageDao {
+        return appDatabase.attachmentStorageDao()
+    }
+
+    @Provides
+    fun provideNotesDao(appDatabase: AppDatabase): NotesDao {
         return appDatabase.notesDao()
     }
 }

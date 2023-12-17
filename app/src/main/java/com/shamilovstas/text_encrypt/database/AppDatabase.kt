@@ -4,14 +4,17 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.shamilovstas.text_encrypt.database.converter.OffsetDateTimeConverter
+import com.shamilovstas.text_encrypt.notes.repository.AttachmentStorageDao
 import com.shamilovstas.text_encrypt.notes.repository.AttachmentEntity
+import com.shamilovstas.text_encrypt.notes.repository.AttachmentStorageEntity
 import com.shamilovstas.text_encrypt.notes.repository.NoteEntity
 import com.shamilovstas.text_encrypt.notes.repository.NotesDao
 
 @Database(
     entities = [
         NoteEntity::class,
-        AttachmentEntity::class
+        AttachmentEntity::class,
+        AttachmentStorageEntity::class
     ], version = 1
 )
 @TypeConverters(
@@ -22,5 +25,7 @@ import com.shamilovstas.text_encrypt.notes.repository.NotesDao
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun notesDao(): NotesDao
+
+    abstract fun attachmentStorageDao(): AttachmentStorageDao
 
 }

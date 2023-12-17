@@ -4,4 +4,4 @@ import javax.inject.Qualifier
 
 @Qualifier
 @Retention(AnnotationRetention.SOURCE)
-annotation class InternalFilesDir()
+annotation class InternalFilesDir

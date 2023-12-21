@@ -21,8 +21,17 @@ class FilesModule {
 
     @Provides
     @TemporaryFilesDir
-    fun provideCacheDir(@ApplicationContext context: Context): File {
-        return context.cacheDir
+    fun provideTemporaryFilesDir(@ApplicationContext context: Context): File {
+
+        val cacheDir = context.cacheDir
+
+        val filename = "temp"
+        val dir = File(cacheDir, filename)
+
+        if (!dir.exists()) {
+            dir.mkdir()
+        }
+        return dir
     }
 
     @Provides

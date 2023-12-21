@@ -20,22 +20,16 @@ abstract class NotesDao {
     @Insert(onConflict = REPLACE)
     abstract suspend fun insertAttachments(attachments: List<AttachmentEntity>)
 
-/*    @Insert(onConflict = REPLACE)
-    abstract fun insertNote(entities: List<NoteEntity>)*/
-
     @Query("SELECT * FROM notes ORDER BY created_date DESC")
     abstract fun getAllNotes(): Flow<List<NoteWithAttachments>>
 
     @Delete
     abstract fun delete(entity: NoteEntity)
 
-    @Update
-    abstract fun update(entity: NoteEntity)
-
 //    @Query("SELECT notes.id, content, is_published, created_date, description FROM notes INNER JOIN attachments ON notes.id=attachments.note_id WHERE notes.id=:noteId")
     @Transaction
     @Query("SELECT * FROM notes WHERE notes.id=:noteId")
-    abstract fun getNoteById(noteId: Long): NoteWithAttachments
+    abstract suspend fun getNoteById(noteId: Long): NoteWithAttachments
 
     @Transaction
     open suspend fun insertNote(entity: NoteWithAttachments): NoteWithAttachments {

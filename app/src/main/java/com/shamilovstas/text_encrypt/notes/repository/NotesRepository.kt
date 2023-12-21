@@ -3,7 +3,6 @@ package com.shamilovstas.text_encrypt.notes.repository
 import com.shamilovstas.text_encrypt.notes.domain.Attachment
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import com.shamilovstas.text_encrypt.notes.domain.toEntity
-import com.shamilovstas.text_encrypt.notes.domain.toModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -28,12 +27,10 @@ class NotesRepository @Inject constructor(
         return notesDao.getAllNotes();
     }
 
-    fun updateNote(note: NoteEntity) {
-        notesDao.update(note)
-    }
-
-    fun deleteNote(note: NoteEntity) {
-        notesDao.delete(note)
+    suspend fun deleteNote(note: Note) {
+        attachmentStorageRepository.deleteAttachments(note)
+        val entity = note.toEntity()
+        notesDao.delete(entity)
     }
 
     suspend fun getNoteById(noteId: Long): NoteWithAttachments {

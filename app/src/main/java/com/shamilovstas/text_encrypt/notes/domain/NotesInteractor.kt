@@ -58,8 +58,7 @@ class NotesInteractor @Inject constructor(
     }
 
     suspend fun deleteNote(note: Note) {
-        val entity = note.toEntity()
-        repository.deleteNote(entity)
+        repository.deleteNote(note)
     }
 }
 

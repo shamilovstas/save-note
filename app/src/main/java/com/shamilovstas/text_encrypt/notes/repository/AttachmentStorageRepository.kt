@@ -9,6 +9,7 @@ import com.shamilovstas.text_encrypt.notes.domain.FileEncryptor
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import com.shamilovstas.text_encrypt.utils.createUniqueFile
 import com.shamilovstas.text_encrypt.utils.getFilename
+import kotlinx.coroutines.coroutineScope
 import java.io.File
 import java.io.FileOutputStream
 import java.nio.ByteBuffer
@@ -17,6 +18,8 @@ import java.time.format.DateTimeFormatter
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 @Singleton
 class AttachmentStorageRepository @Inject constructor(
@@ -29,6 +32,18 @@ class AttachmentStorageRepository @Inject constructor(
 
     companion object {
         val FILENAME_FROM_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyymmdd_hhmmss")
+    }
+
+    suspend fun deleteAttachments(note: Note) {
+        coroutineScope {
+            val storage = attachmentStorageDao.findAttachmentStorageForNote(note.id) ?: return@coroutineScope
+            val dir = File(baseDir, storage.relativePath)
+            if (dir.exists()) {
+                suspendCoroutine {
+                    it.resume(dir.deleteRecursively())
+                }
+            }
+        }
     }
 
     suspend fun createNoteDir(baseDir: File, note: Note): File {

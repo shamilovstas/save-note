@@ -36,11 +36,6 @@ class ComposeNoteFragment : ToolbarFragment() {
     private val attachmentsAdapter = AttachmentAdapter()
     @Inject lateinit var cleanerObserver: CleanerLifecycleObserver
 
-    private val createDocument = registerForActivityResult(ActivityResultContracts.CreateDocument("*/*")) {
-        requireNotNull(it)
-        // TODO save to downloads
-    }
-
     private val pickFile = registerForActivityResult(ActivityResultContracts.OpenDocument()) {uri ->
         if (uri == null) return@registerForActivityResult
         viewModel.addAttachment(uri, requireActivity().contentResolver)

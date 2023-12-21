@@ -104,29 +104,6 @@ class ComposeNoteViewModel @Inject constructor(
         _state.update { it.copy(cipherState = cipherMode) }
     }
 
-/*    @OptIn(ExperimentalCoroutinesApi::class)
-    fun saveToDownloads(outputFile: Uri, contentResolver: ContentResolver) = viewModelScope.launch {
-        suspendCancellableCoroutine<Unit> {
-            contentResolver.openOutputStream(outputFile).use { output ->
-                requireNotNull(output)
-                contentResolver.openInputStream(requireNotNull(encrUri)).use { input ->
-                    requireNotNull(input)
-
-                    val buffer = ByteArray(1024)
-
-                    var readBytes = 0
-
-                    do {
-                        readBytes = input.read(buffer)
-                        output.write(buffer)
-                    } while (readBytes != -1)
-                }
-            }
-            it.resume(Unit) {}
-        }
-    }*/
-
-
     fun addAttachment(uri: Uri, contentResolver: ContentResolver) {
         val note = state.value.note
         val attachment = Attachment(noteId = note.id, uri = uri, filename = uri.getFilename(contentResolver))

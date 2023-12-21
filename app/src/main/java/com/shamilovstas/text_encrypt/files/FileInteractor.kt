@@ -51,19 +51,8 @@ class FileInteractor @Inject constructor(
     private fun exportAttachment(attachment: Attachment, zipOutputStream: ZipOutputStream) {
         val zipEntry = ZipEntry(attachment.filename) // TODO handle name collision with 'contents' file
         zipOutputStream.putNextEntry(zipEntry)
-
-        val buffer = ByteArray(2048)
         contentResolver.openInputStream(attachment.uri).use {
-            requireNotNull(it)
-            var readBytes = 0
-
-            do {
-                readBytes = it.read(buffer)
-
-                if (readBytes != -1) {
-                    zipOutputStream.write(buffer)
-                }
-            } while (readBytes != -1)
+            requireNotNull(it).copyTo(zipOutputStream)
         }
         zipOutputStream.closeEntry()
     }

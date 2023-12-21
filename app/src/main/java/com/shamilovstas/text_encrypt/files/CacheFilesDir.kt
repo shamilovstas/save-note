@@ -3,5 +3,5 @@ package com.shamilovstas.text_encrypt.files
 import javax.inject.Qualifier
 
 @Qualifier
-@Retention(AnnotationRetention.SOURCE)
+@Retention(AnnotationRetention.RUNTIME)
 annotation class CacheFilesDir

@@ -2,6 +2,7 @@ package com.shamilovstas.text_encrypt.notes.repository
 
 import android.content.ContentResolver
 import android.net.Uri
+import com.shamilovstas.text_encrypt.files.CacheFilesDir
 import com.shamilovstas.text_encrypt.files.InternalFilesDir
 import com.shamilovstas.text_encrypt.notes.domain.Attachment
 import com.shamilovstas.text_encrypt.notes.domain.FileEncryptor
@@ -15,6 +16,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
@@ -22,6 +24,7 @@ class AttachmentStorageRepository @Inject constructor(
     @InternalFilesDir private val baseDir: File,
     private val attachmentStorageDao: AttachmentStorageDao,
     private val fileEncryptor: FileEncryptor,
+    @CacheFilesDir private val cacheDir: File,
     private val contentResolver: ContentResolver
 ) {
 
@@ -29,7 +32,7 @@ class AttachmentStorageRepository @Inject constructor(
         val FILENAME_FROM_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyymmdd_hhmmss")
     }
 
-    suspend fun createAttachmentsDir(note: Note): File {
+    suspend fun createNoteDir(baseDir: File, note: Note): File {
         val hashcodeBuffer = ByteBuffer.allocate(Int.SIZE_BYTES)
         hashcodeBuffer.putInt(note.hashCode())
         val uuid = UUID.nameUUIDFromBytes(hashcodeBuffer.array())
@@ -43,6 +46,22 @@ class AttachmentStorageRepository @Inject constructor(
 
         val attachmentStorageEntity = AttachmentStorageEntity(relativePath = dirname, noteId = note.id)
         attachmentStorageDao.insertAttachmentStorage(attachmentStorageEntity)
+        return dir
+    }
+
+    suspend fun createAttachmentsDir(note: Note): File {
+        return createNoteDir(baseDir, note)
+    }
+
+    suspend fun createAttachmentsTempDir(): File {
+        val uuid = UUID.randomUUID()
+        val dirname = uuid.toString()
+
+        val dir = createUniqueFile(cacheDir, dirname)
+
+        if (!dir.mkdir()) {
+            throw IllegalStateException("Couldn't create temp directory with name ${dir.path}")
+        }
         return dir
     }
 
@@ -73,7 +92,6 @@ class AttachmentStorageRepository @Inject constructor(
     //TODO add parallel computation
     suspend fun decryptAttachments(note: Note, password: String): List<Attachment> {
 
-        var attachmentsDir = getAttachmentDir(note)
         val encryptedUris = mutableListOf<Attachment>()
         for (attachment in note.attachments) {
             val filename = attachment.uri.getFilename(contentResolver)

@@ -19,11 +19,11 @@ class FilesModule {
         return context.filesDir
     }
 
-/*    @Provides
+    @Provides
     @CacheFilesDir
     fun provideCacheDir(@ApplicationContext context: Context): File {
         return context.cacheDir
-    }*/
+    }
 
     @Provides
     fun provideContentResolver(@ApplicationContext context: Context): ContentResolver {

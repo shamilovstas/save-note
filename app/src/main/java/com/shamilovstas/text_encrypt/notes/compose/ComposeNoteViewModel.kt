@@ -93,7 +93,7 @@ class ComposeNoteViewModel @Inject constructor(
         _effect.emit(ImportMessageScreenEffect.RequestPassword(state.value.previousPassword))
     }
 
-    fun import(fileUri: Uri, contentResolver: ContentResolver) {
+    fun import(fileUri: Uri, contentResolver: ContentResolver)  = viewModelScope.launch {
         val note = contentResolver.openInputStream(fileUri).use {
             return@use fileInteractor.import(requireNotNull(it))
         }

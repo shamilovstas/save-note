@@ -1,11 +1,15 @@
 package com.shamilovstas.text_encrypt.files
 
 import android.content.ContentResolver
+import android.net.Uri
 import androidx.annotation.WorkerThread
 import com.shamilovstas.text_encrypt.notes.domain.Attachment
 import com.shamilovstas.text_encrypt.notes.domain.Note
+import com.shamilovstas.text_encrypt.notes.repository.AttachmentStorageRepository
 import com.shamilovstas.text_encrypt.notes.repository.AttachmentStorageRepository.Companion.FILENAME_FROM_DATE_FORMATTER
+import com.shamilovstas.text_encrypt.utils.createUniqueFile
 import java.io.File
+import java.io.FileOutputStream
 import java.io.InputStream
 import java.io.OutputStream
 import java.nio.ByteBuffer
@@ -23,7 +27,8 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 @OptIn(ExperimentalEncodingApi::class)
 @Singleton
 class FileInteractor @Inject constructor(
-    private val contentResolver: ContentResolver
+    private val contentResolver: ContentResolver,
+    private val attachmentStorageRepository: AttachmentStorageRepository
 ) {
 
     companion object {
@@ -80,30 +85,42 @@ class FileInteractor @Inject constructor(
         zipOutputStream.closeEntry()
     }
 
-    fun import(inputStream: InputStream) : Note {
+    suspend fun import(inputStream: InputStream) : Note {
         val zipInputStream = ZipInputStream(inputStream)
 
         var zipEntry: ZipEntry? = zipInputStream.nextEntry
 
         var note: Note? = null
-        var attachments: MutableList<Attachment> = mutableListOf()
+        val attachments: MutableList<Attachment> = mutableListOf()
+
+        val tempMediaDir = attachmentStorageRepository.createAttachmentsTempDir()
         while (zipEntry != null) {
             if (zipEntry.name == CONTENTS_FILE) {
                 note = importNoteContents(zipInputStream)
             } else {
-                val attachment = importAttachment(zipEntry, zipInputStream)
+                val attachment = importAttachment(zipEntry, zipInputStream, tempMediaDir)
                 attachments.add(attachment)
             }
             zipEntry = zipInputStream.nextEntry
         }
 
+        zipInputStream.close()
+
         val importedNote = requireNotNull(note).copy(attachments = attachments)
         return importedNote
     }
 
-    private fun importAttachment(zipEntry: ZipEntry, zipInputStream: ZipInputStream): Attachment {
+    private fun importAttachment(zipEntry: ZipEntry, zipInputStream: ZipInputStream, tempMediaDir: File): Attachment {
 
-        TODO("Not yet implemented")
+        val name = zipEntry.name
+        val file = createUniqueFile(tempMediaDir, name)
+
+        val fileOutputStream = FileOutputStream(file)
+        fileOutputStream.use {
+            zipInputStream.copyTo(it)
+        }
+        val attachment = Attachment(noteId = 0, uri = Uri.fromFile(file), filename = name, isEncrypted = true)
+        return attachment
     }
 
     private fun importNoteContents(zipInputStream: ZipInputStream): Note {

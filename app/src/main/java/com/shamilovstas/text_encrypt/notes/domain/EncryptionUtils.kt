@@ -12,9 +12,8 @@ import javax.inject.Singleton
 @Singleton
 class EncryptionUtils @Inject constructor() {
     companion object {
-        const val SALT_LENGTH = 20
-        const val IV_LENGTH = 16
         const val ALGORITHM = "AES/CBC/PKCS5Padding"
+        const val ALGORITHM2 = "AES/CBC/NoPadding"
         const val MIN_BLOCK_SIZE = 16
         const val DIGEST_ALGO = "PBKDF2WithHmacSHA256"
     }
@@ -40,12 +39,8 @@ class EncryptionUtils @Inject constructor() {
         return rnd
     }
 
-    fun generateSalt(): ByteArray {
-        return generateRandom(SALT_LENGTH)
-    }
-
-    fun generateIv(): IvParameterSpec {
-        return IvParameterSpec(generateRandom(IV_LENGTH))
+    fun generateIv(size: Int): IvParameterSpec {
+        return IvParameterSpec(generateRandom(size))
     }
 
     fun encryptBytes(data: ByteArray, iv: IvParameterSpec, key: SecretKeySpec): ByteArray {

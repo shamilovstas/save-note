@@ -17,12 +17,12 @@ class TextEncryptor @Inject constructor(
     @OptIn(ExperimentalEncodingApi::class)
     fun encrypt(data: String, password: String): String {
         if (data.isEmpty()) throw IllegalArgumentException("Clear text cannot be empty")
-        val salt = utils.generateSalt()
+        val cipher = utils.cipher
+        val salt = utils.generateRandom(cipher.blockSize)
         val key = utils.generateKey(password, salt)
 
-        val cipher = utils.cipher
 
-        val iv = utils.generateIv()
+        val iv = utils.generateIv(cipher.blockSize)
         cipher.init(Cipher.ENCRYPT_MODE, key, iv)
         val ciphertext: ByteArray = cipher.doFinal(data.toByteArray())
 
@@ -35,14 +35,14 @@ class TextEncryptor @Inject constructor(
     @OptIn(ExperimentalEncodingApi::class)
     fun decrypt(data: String, password: String): String {
         val encText2 = Base64.decode(data)
-        checkMessageSize(encText2.size)
-
         val cipher = utils.cipher
+        checkMessageSize(encText2.size, cipher.blockSize)
 
-        val salt = encText2.slice(0 until EncryptionUtils.SALT_LENGTH).toByteArray()
-        var curIndex: Int = EncryptionUtils.SALT_LENGTH
-        val ivBytes = encText2.slice(curIndex until curIndex + EncryptionUtils.IV_LENGTH).toByteArray()
-        curIndex += EncryptionUtils.IV_LENGTH
+
+        val salt = encText2.slice(0 until cipher.blockSize).toByteArray()
+        var curIndex: Int = cipher.blockSize
+        val ivBytes = encText2.slice(curIndex until curIndex + cipher.blockSize).toByteArray()
+        curIndex += cipher.blockSize
         val key = utils.generateKey(password, salt)
         val iv = IvParameterSpec(ivBytes)
         cipher.init(Cipher.DECRYPT_MODE, key, iv)
@@ -52,8 +52,8 @@ class TextEncryptor @Inject constructor(
         return ciphertext.toString(Charsets.UTF_8)
     }
 
-    private fun checkMessageSize(size: Int) {
-        val minSize = EncryptionUtils.MIN_BLOCK_SIZE + EncryptionUtils.SALT_LENGTH + EncryptionUtils.IV_LENGTH
+    private fun checkMessageSize(size: Int, blockSize: Int) {
+        val minSize = EncryptionUtils.MIN_BLOCK_SIZE + blockSize * 2
         if (size < minSize) throw EncryptedMessageMalformed(size, minSize)
     }
 

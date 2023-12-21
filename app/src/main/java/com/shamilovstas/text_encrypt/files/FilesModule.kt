@@ -20,7 +20,7 @@ class FilesModule {
     }
 
     @Provides
-    @CacheFilesDir
+    @TemporaryFilesDir
     fun provideCacheDir(@ApplicationContext context: Context): File {
         return context.cacheDir
     }

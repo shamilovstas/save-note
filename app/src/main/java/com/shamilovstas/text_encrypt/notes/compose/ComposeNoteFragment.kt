@@ -19,12 +19,14 @@ import com.shamilovstas.text_encrypt.PasswordDialog
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.base.ToolbarFragment
 import com.shamilovstas.text_encrypt.databinding.FragmentComposeNoteBinding
+import com.shamilovstas.text_encrypt.notes.domain.CleanerLifecycleObserver
 import com.shamilovstas.text_encrypt.showPasswordDialog
 import com.shamilovstas.text_encrypt.utils.getFilename
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ComposeNoteFragment : ToolbarFragment() {
@@ -32,6 +34,7 @@ class ComposeNoteFragment : ToolbarFragment() {
     private var binding: FragmentComposeNoteBinding? = null
     private val viewModel by viewModels<ComposeNoteViewModel>()
     private val attachmentsAdapter = AttachmentAdapter()
+    @Inject lateinit var cleanerObserver: CleanerLifecycleObserver
 
     private val createDocument = registerForActivityResult(ActivityResultContracts.CreateDocument("*/*")) {
         requireNotNull(it)
@@ -73,7 +76,7 @@ class ComposeNoteFragment : ToolbarFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        cleanerObserver.init(this.lifecycle)
         if (!requireArguments().containsKey(KEY_MODE)) {
             throw IllegalStateException("Mode not provided")
         }

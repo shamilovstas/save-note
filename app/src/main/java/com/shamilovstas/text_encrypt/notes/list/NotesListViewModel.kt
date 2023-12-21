@@ -10,7 +10,6 @@ import com.shamilovstas.text_encrypt.files.FileInteractor
 import com.shamilovstas.text_encrypt.notes.domain.CopyNoteContentUseCase
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import com.shamilovstas.text_encrypt.notes.domain.NotesInteractor
-import com.shamilovstas.text_encrypt.utils.getFilename
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -72,7 +71,7 @@ class NotesListViewModel @Inject constructor(
                 exportInteractor.export(note, outputStream)
 
                 withContext(Dispatchers.Main) {
-                    _effects.emit(NotesListEffects.NoteExported(uri.getFilename(contentResolver)))
+                    _effects.emit(NotesListEffects.NoteExported(uri))
                 }
             }
         }
@@ -94,5 +93,5 @@ data class NotesListScreenState(
 sealed class NotesListEffects {
     data object NoteContentCopied : NotesListEffects()
     data class CreatePublicFile(val filename: String) : NotesListEffects()
-    data class NoteExported(val filename: String): NotesListEffects()
+    data class NoteExported(val uri: Uri): NotesListEffects()
 }

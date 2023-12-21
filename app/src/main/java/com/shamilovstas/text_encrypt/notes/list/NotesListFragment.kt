@@ -1,10 +1,12 @@
 package com.shamilovstas.text_encrypt.notes.list
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ShareCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +18,7 @@ import com.shamilovstas.text_encrypt.base.ToolbarFragment
 import com.shamilovstas.text_encrypt.databinding.FragmentNoteListBinding
 import com.shamilovstas.text_encrypt.notes.compose.ComposeNoteFragment
 import com.shamilovstas.text_encrypt.notes.domain.Note
+import com.shamilovstas.text_encrypt.utils.getFilename
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -95,7 +98,17 @@ class NotesListFragment : ToolbarFragment() {
             createDocument.launch(effect.filename)
         }
         is NotesListEffects.NoteExported -> {
-            Snackbar.make(binding!!.root, getString(R.string.note_exported, effect.filename), Snackbar.LENGTH_SHORT).show()
+            val filename = effect.uri.getFilename(requireActivity().contentResolver)
+            Snackbar.make(binding!!.root, getString(R.string.note_exported, filename), Snackbar.LENGTH_LONG)
+                .setAction(R.string.action_share) {
+                    val intent = ShareCompat.IntentBuilder(requireContext())
+                        .setType("application/octet-stream")
+                        .setStream(effect.uri)
+                        .intent
+
+                    requireContext().startActivity(Intent.createChooser(intent, getString(R.string.share_note_dialog_title)))
+
+                }.show()
         }
     }
 

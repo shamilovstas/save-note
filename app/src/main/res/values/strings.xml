@@ -34,4 +34,6 @@
     <string name="title_import_message">Import message</string>
     <string name="note_exported">Exported to \"%s\"</string>
     <string name="enter_message">Enter message</string>
+    <string name="action_share">Share</string>
+    <string name="share_note_dialog_title">Sharing a note</string>
 </resources>

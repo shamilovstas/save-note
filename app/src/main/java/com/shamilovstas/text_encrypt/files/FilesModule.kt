@@ -27,10 +27,6 @@ class FilesModule {
 
         val filename = "temp"
         val dir = File(cacheDir, filename)
-
-        if (!dir.exists()) {
-            dir.mkdir()
-        }
         return dir
     }
 

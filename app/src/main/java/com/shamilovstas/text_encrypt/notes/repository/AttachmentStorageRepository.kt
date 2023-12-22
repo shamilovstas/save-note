@@ -2,25 +2,25 @@ package com.shamilovstas.text_encrypt.notes.repository
 
 import android.content.ContentResolver
 import android.net.Uri
-import com.shamilovstas.text_encrypt.files.TemporaryFilesDir
 import com.shamilovstas.text_encrypt.files.InternalFilesDir
+import com.shamilovstas.text_encrypt.files.TemporaryFilesDir
 import com.shamilovstas.text_encrypt.notes.domain.Attachment
 import com.shamilovstas.text_encrypt.notes.domain.FileEncryptor
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import com.shamilovstas.text_encrypt.utils.createUniqueFile
+import com.shamilovstas.text_encrypt.utils.digest
 import com.shamilovstas.text_encrypt.utils.getFilename
 import kotlinx.coroutines.coroutineScope
 import java.io.File
 import java.io.FileOutputStream
-import java.nio.ByteBuffer
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+@OptIn(ExperimentalStdlibApi::class)
 @Singleton
 class AttachmentStorageRepository @Inject constructor(
     @InternalFilesDir private val baseDir: File,
@@ -32,6 +32,7 @@ class AttachmentStorageRepository @Inject constructor(
 
     companion object {
         val FILENAME_FROM_DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyymmdd_hhmmss")
+        private const val TEMP_DIR_NAME_LENGTH = 36
     }
 
     suspend fun deleteAttachments(note: Note) {
@@ -47,14 +48,10 @@ class AttachmentStorageRepository @Inject constructor(
     }
 
     suspend fun createNoteDir(baseDir: File, note: Note): File {
-        val hashcodeBuffer = ByteBuffer.allocate(Int.SIZE_BYTES)
-        hashcodeBuffer.putInt(note.hashCode())
-        val uuid = UUID.nameUUIDFromBytes(hashcodeBuffer.array())
-        val dirname = uuid.toString()
-
+        val dirname = digest(TEMP_DIR_NAME_LENGTH)
         val dir = createUniqueFile(baseDir, dirname)
 
-        if (!dir.mkdir()) {
+        if (!dir.mkdirs()) {
             throw IllegalStateException("Couldn't create directory with name ${dir.path}")
         }
 
@@ -68,12 +65,11 @@ class AttachmentStorageRepository @Inject constructor(
     }
 
     suspend fun createAttachmentsTempDir(): File {
-        val uuid = UUID.randomUUID()
-        val dirname = uuid.toString()
+        val dirname = digest(TEMP_DIR_NAME_LENGTH)
 
         val dir = createUniqueFile(cacheDir, dirname)
 
-        if (!dir.mkdir()) {
+        if (!dir.mkdirs()) {
             throw IllegalStateException("Couldn't create temp directory with name ${dir.path}")
         }
         return dir

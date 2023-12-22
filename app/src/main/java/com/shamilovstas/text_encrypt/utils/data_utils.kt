@@ -1,8 +1,11 @@
+@file:OptIn(ExperimentalStdlibApi::class)
+
 package com.shamilovstas.text_encrypt.utils
 
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.OpenableColumns
+import kotlin.random.Random
 
 fun Uri.getFilename(contentResolver: ContentResolver): String {
     var filename = ""
@@ -21,4 +24,10 @@ fun Uri.getFilename(contentResolver: ContentResolver): String {
     }
 
     return filename
+}
+
+
+fun digest(len: Int): String {
+    val bytes = Random.Default.nextBytes(len / 2)
+    return bytes.toHexString()
 }

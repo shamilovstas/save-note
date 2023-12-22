@@ -15,17 +15,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import com.shamilovstas.text_encrypt.PasswordDialog
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.base.ToolbarFragment
 import com.shamilovstas.text_encrypt.databinding.FragmentComposeNoteBinding
+import com.shamilovstas.text_encrypt.notes.compose.password.PasswordDialogBuilder
 import com.shamilovstas.text_encrypt.notes.domain.CleanerLifecycleObserver
-import com.shamilovstas.text_encrypt.showPasswordDialog
-import com.shamilovstas.text_encrypt.utils.getFilename
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -150,12 +146,12 @@ class ComposeNoteFragment : ToolbarFragment() {
             }
 
             is ImportMessageScreenEffect.RequestPassword -> {
-                childFragmentManager.showPasswordDialog(
-                    this,
-                    "password_dialog",
-                    onResult = { viewModel.onPasswordEntered(it) },
-                    args = bundleOf(PasswordDialog.PREVIOUS_PASSWORD to effect.previousPassword)
-                )
+                PasswordDialogBuilder(childFragmentManager, this)
+                    .tag("password_dialog")
+                    .onResult { viewModel.onPasswordEntered(it) }
+                    .previousPassword(effect.previousPassword)
+                    .mode(effect.dialogMode)
+                    .show()
             }
 
             is ImportMessageScreenEffect.NoteSavedMessage -> {

@@ -6,6 +6,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shamilovstas.text_encrypt.files.FileInteractor
+import com.shamilovstas.text_encrypt.notes.compose.password.PasswordDialogMode
 import com.shamilovstas.text_encrypt.notes.domain.Attachment
 import com.shamilovstas.text_encrypt.notes.domain.EncryptedMessageMalformed
 import com.shamilovstas.text_encrypt.notes.domain.FileEncryptor
@@ -74,7 +75,7 @@ class ComposeNoteViewModel @Inject constructor(
         val note = state.value.note.copy(content = content, description = description)
         _state.update { it.copy(note = note) }
         if (cipherState == CipherState.Decrypted) {
-            _effect.emit(ImportMessageScreenEffect.RequestPassword(state.value.previousPassword))
+            _effect.emit(ImportMessageScreenEffect.RequestPassword(state.value.previousPassword, PasswordDialogMode.CreatePassword))
         } else {
             saveImportedNote(content, description)
         }
@@ -113,7 +114,11 @@ class ComposeNoteViewModel @Inject constructor(
 }
 
 sealed class ImportMessageScreenEffect {
-    data class RequestPassword(val previousPassword: String? = null) : ImportMessageScreenEffect()
+    data class RequestPassword(
+        val previousPassword: String? = null,
+        val dialogMode: PasswordDialogMode = PasswordDialogMode.EnterPassword
+    ) : ImportMessageScreenEffect()
+
     data object ComposeComplete : ImportMessageScreenEffect()
     data object ReturnToNoteList : ImportMessageScreenEffect()
     data object NoteSavedMessage : ImportMessageScreenEffect()

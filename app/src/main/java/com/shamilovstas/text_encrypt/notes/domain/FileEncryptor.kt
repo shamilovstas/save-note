@@ -30,7 +30,7 @@ class FileEncryptor @Inject constructor(
     }
 
     fun decrypt(inputStream: InputStream, outputStream: OutputStream, password: String) {
-        val cipher = Cipher.getInstance(EncryptionUtils.ALGORITHM2)
+        val cipher = utils.cipher
 
         val saltBuffer = ByteArray(cipher.blockSize)
         inputStream.read(saltBuffer)

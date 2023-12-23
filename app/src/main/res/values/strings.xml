@@ -39,4 +39,7 @@
     <string name="corrupted_file_ok_button">OK</string>
     <string name="corrupted_file_dialog_message">Invalid or corrupted file. Please ensure you are using the correct file type and try again.</string>
     <string name="corrupted_file_dialog_title">Note import</string>
+    <string name="attachment_saved">Attachment \'%s\' saved</string>
+    <string name="action_open_attachment">Open</string>
+    <string name="dialog_title_open_with">Open with</string>
 </resources>

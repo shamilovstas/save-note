@@ -38,7 +38,7 @@ class ComposeNoteViewModel @Inject constructor(
 
     fun onPasswordEntered(password: String) = viewModelScope.launch {
         val cipherState = state.value.cipherState
-        val note = state.value.note
+        val note = state.value.note.toModel()
         try {
             if (cipherState == CipherState.Decrypted) {
                 notesInteractor.save(note, password)
@@ -47,7 +47,7 @@ class ComposeNoteViewModel @Inject constructor(
             } else {
                 val processedNote = notesInteractor.decrypt(note, password)
                 _state.update {
-                    it.copy(note = processedNote, previousPassword = password, cipherState = CipherState.Decrypted)
+                    it.copy(note = processedNote.toViewState(), previousPassword = password, cipherState = CipherState.Decrypted)
                 }
             }
         } catch (e: EncryptedMessageMalformed) {
@@ -61,13 +61,16 @@ class ComposeNoteViewModel @Inject constructor(
 
     fun loadNote(noteId: Long) = viewModelScope.launch {
         val note = withContext(Dispatchers.IO) { notesInteractor.getNote(noteId) }
-        _state.update { it.copy(note = note, cipherState = CipherState.Encrypted) }
+        _state.update { it.copy(note = note.toViewState(), cipherState = CipherState.Encrypted) }
         _effect.emit(ImportMessageScreenEffect.RequestPassword(state.value.previousPassword))
     }
 
     fun saveNote(content: String, description: String = "") = viewModelScope.launch {
         val cipherState = state.value.cipherState
-        val note = state.value.note.copy(content = content, description = description)
+        val note = state.value.note.apply {
+            this.content = content
+            this.description = description
+        }
         _state.update { it.copy(note = note) }
         if (cipherState == CipherState.Decrypted) {
             _effect.emit(ImportMessageScreenEffect.RequestPassword(state.value.previousPassword, PasswordDialogMode.CreatePassword))
@@ -84,7 +87,8 @@ class ComposeNoteViewModel @Inject constructor(
     }
 
     fun decryptNote(encryptedContent: String?) = viewModelScope.launch {
-        val note = state.value.note.copy(content = encryptedContent!!)
+        val note = state.value.note
+        note.content = encryptedContent!!
         _state.update { it.copy(note = note) }
         _effect.emit(ImportMessageScreenEffect.RequestPassword(state.value.previousPassword))
     }
@@ -94,7 +98,7 @@ class ComposeNoteViewModel @Inject constructor(
             val note = contentResolver.openInputStream(fileUri).use {
                 return@use fileInteractor.import(requireNotNull(it))
             }
-            _state.update { it.copy(note = note) }
+            _state.update { it.copy(note = note.toViewState()) }
         } catch (e: UnknownNoteFiletype) {
             _effect.emit(ImportMessageScreenEffect.UnknownFiletype)
         }
@@ -104,11 +108,23 @@ class ComposeNoteViewModel @Inject constructor(
         _state.update { it.copy(cipherState = cipherMode) }
     }
 
+    fun setNoteContent(content: String) {
+        val note = state.value.note
+        note.content = content
+        _state.update { it.copy(note = note) }
+    }
+
+    fun setNoteDescription(description: String) {
+        val note = state.value.note
+        note.description = description
+        _state.update { it.copy(note = note) }
+    }
+
     fun addAttachment(uri: Uri, contentResolver: ContentResolver) {
         val note = state.value.note
         val attachment = Attachment(noteId = note.id, uri = uri, filename = uri.getFilename(contentResolver))
-        val newNote = note.copy(attachments = note.attachments + attachment)
-        _state.update { it.copy(note = newNote) }
+        note.attachments = note.attachments + attachment // ListAdapter wants a new list
+        _state.update { it.copy(note = note) }
     }
 }
 

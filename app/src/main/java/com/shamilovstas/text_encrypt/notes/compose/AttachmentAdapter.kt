@@ -7,12 +7,16 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.Adapter
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import coil.load
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.databinding.ItemAttachmentBinding
 import com.shamilovstas.text_encrypt.notes.domain.Attachment
 
-class AttachmentAdapter : ListAdapter<Attachment, AttachmentAdapter.AttachmentViewHolder>(
+class AttachmentAdapter(
+    private val onAttachmentClick: (Attachment) -> Unit = {}
+) : ListAdapter<Attachment, AttachmentAdapter.AttachmentViewHolder>(
     DIFF_CALLBACK
 ) {
 
@@ -31,6 +35,13 @@ class AttachmentAdapter : ListAdapter<Attachment, AttachmentAdapter.AttachmentVi
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AttachmentViewHolder {
         val binding = ItemAttachmentBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         val viewHolder = AttachmentViewHolder(binding)
+
+        binding.root.setOnClickListener {
+            val position = viewHolder.adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                onAttachmentClick.invoke(getItem(position))
+            }
+        }
         return viewHolder
     }
 
@@ -47,8 +58,7 @@ class AttachmentAdapter : ListAdapter<Attachment, AttachmentAdapter.AttachmentVi
                 binding.attachmentPreview.load(ContextCompat.getDrawable(itemView.context, R.drawable.lock))
             } else {
                 binding.attachmentPreview.load(attachment.uri) {
-                    this.
-                    error(R.drawable.file)
+                    this.error(R.drawable.file)
                 }
             }
             binding.attachmentDesc.setText(attachment.filename)

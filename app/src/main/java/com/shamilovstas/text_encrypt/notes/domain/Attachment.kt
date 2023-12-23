@@ -8,4 +8,6 @@ data class Attachment(
     val uri: Uri,
     val filename: String,
     val isEncrypted: Boolean = false
-)
+) {
+    val isDecrypted = !isEncrypted
+}

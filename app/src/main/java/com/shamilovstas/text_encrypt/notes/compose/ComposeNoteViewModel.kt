@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.crypto.BadPaddingException
 import javax.inject.Inject
+import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
 class ComposeNoteViewModel @Inject constructor(
@@ -93,7 +94,7 @@ class ComposeNoteViewModel @Inject constructor(
         _effect.emit(ImportMessageScreenEffect.RequestPassword(state.value.previousPassword))
     }
 
-    fun import(fileUri: Uri, contentResolver: ContentResolver)  = viewModelScope.launch {
+    fun import(fileUri: Uri, contentResolver: ContentResolver) = viewModelScope.launch {
         try {
             val note = contentResolver.openInputStream(fileUri).use {
                 return@use fileInteractor.import(requireNotNull(it))
@@ -126,6 +127,32 @@ class ComposeNoteViewModel @Inject constructor(
         note.attachments = note.attachments + attachment // ListAdapter wants a new list
         _state.update { it.copy(note = note) }
     }
+
+    fun prepareAttachmentForSaving(attachment: Attachment) {
+        _state.update { it.copy(downloadedAttachment = attachment) }
+    }
+
+    fun saveAttachment(outputUri: Uri, contentResolver: ContentResolver) = viewModelScope.launch {
+        val attachment = state.value.downloadedAttachment ?: return@launch
+
+        val uri = withContext(Dispatchers.IO) {
+            suspendCoroutine {
+                contentResolver.openOutputStream(outputUri).use { output ->
+                    requireNotNull(output)
+
+                    contentResolver.openInputStream(attachment.uri).use { input ->
+                        requireNotNull(input)
+
+                        input.copyTo(output)
+                    }
+                }
+                it.resumeWith(Result.success(outputUri))
+            }
+        }
+
+        _state.update { it.copy(downloadedAttachment = null) }
+        _effect.emit(ImportMessageScreenEffect.DownloadedAttachment(uri, attachment.filename))
+    }
 }
 
 sealed class ImportMessageScreenEffect {
@@ -139,5 +166,6 @@ sealed class ImportMessageScreenEffect {
     data object NoteSavedMessage : ImportMessageScreenEffect()
     data object WrongPassword : ImportMessageScreenEffect()
     data object MalformedEncryptedMessage : ImportMessageScreenEffect()
-    data object UnknownFiletype: ImportMessageScreenEffect()
+    data object UnknownFiletype : ImportMessageScreenEffect()
+    data class DownloadedAttachment(val uri: Uri, val filename: String) : ImportMessageScreenEffect()
 }

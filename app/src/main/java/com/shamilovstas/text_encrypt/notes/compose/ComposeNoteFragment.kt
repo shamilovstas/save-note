@@ -1,8 +1,8 @@
 package com.shamilovstas.text_encrypt.notes.compose
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +21,7 @@ import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.base.ToolbarFragment
 import com.shamilovstas.text_encrypt.databinding.FragmentComposeNoteBinding
 import com.shamilovstas.text_encrypt.notes.compose.password.PasswordDialogBuilder
+import com.shamilovstas.text_encrypt.notes.domain.Attachment
 import com.shamilovstas.text_encrypt.notes.domain.CleanerLifecycleObserver
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -31,12 +32,19 @@ class ComposeNoteFragment : ToolbarFragment() {
 
     private var binding: FragmentComposeNoteBinding? = null
     private val viewModel by viewModels<ComposeNoteViewModel>()
-    private val attachmentsAdapter = AttachmentAdapter()
+    private val attachmentsAdapter = AttachmentAdapter(
+        onAttachmentClick = ::onAttachmentClicked
+    )
     @Inject lateinit var cleanerObserver: CleanerLifecycleObserver
 
     private val pickFile = registerForActivityResult(ActivityResultContracts.OpenDocument()) {uri ->
         if (uri == null) return@registerForActivityResult
         viewModel.addAttachment(uri, requireActivity().contentResolver)
+    }
+
+    private val saveFile = registerForActivityResult(ActivityResultContracts.CreateDocument("image/*")) {uri ->
+        if (uri == null) return@registerForActivityResult
+        viewModel.saveAttachment(uri, requireActivity().contentResolver)
     }
 
     companion object {
@@ -64,6 +72,14 @@ class ComposeNoteFragment : ToolbarFragment() {
                 KEY_MODE to CipherState.Encrypted.ordinal,
                 KEY_NOTE_ID to noteId
             )
+        }
+    }
+
+    private fun onAttachmentClicked(attachment: Attachment) {
+
+        if (attachment.isDecrypted) {
+            viewModel.prepareAttachmentForSaving(attachment)
+            saveFile.launch(attachment.filename)
         }
     }
 
@@ -188,6 +204,15 @@ class ComposeNoteFragment : ToolbarFragment() {
                         findNavController().navigateUp()
                     }
                     .create().show()
+            }
+            is ImportMessageScreenEffect.DownloadedAttachment -> {
+                Snackbar.make(binding!!.root, getString(R.string.attachment_saved, effect.filename), Snackbar.LENGTH_LONG)
+                    .setAction(R.string.action_open_attachment) {
+                        val intent = Intent()
+                        intent.setDataAndType(effect.uri, "image/*")
+                        intent.action = Intent.ACTION_VIEW
+                        startActivity(Intent.createChooser(intent, getString(R.string.dialog_title_open_with)))
+                    }.show()
             }
         }
     }

@@ -5,6 +5,14 @@
     android:id="@+id/nav_graph.xml"
     app:startDestination="@id/notes_list">
 
+    <action android:id="@+id/action_import_file"
+        app:destination="@id/compose_note">
+        <argument
+            android:name="fileUri"
+            android:defaultValue="@null"
+            app:argType="android.net.Uri"
+            app:nullable="true" />
+    </action>
 
     <fragment
         android:id="@+id/notes_list"

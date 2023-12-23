@@ -95,6 +95,10 @@ class FileInteractor @Inject constructor(
 
         zipInputStream.close()
 
+        if (note == null) {
+            throw UnknownNoteFiletype()
+        }
+
         val importedNote = requireNotNull(note).copy(attachments = attachments)
         return importedNote
     }

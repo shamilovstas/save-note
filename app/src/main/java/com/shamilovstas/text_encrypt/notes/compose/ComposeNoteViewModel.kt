@@ -1,38 +1,33 @@
 package com.shamilovstas.text_encrypt.notes.compose
 
-import android.app.DownloadManager
 import android.content.ContentResolver
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shamilovstas.text_encrypt.files.FileInteractor
+import com.shamilovstas.text_encrypt.files.UnknownNoteFiletype
 import com.shamilovstas.text_encrypt.notes.compose.password.PasswordDialogMode
 import com.shamilovstas.text_encrypt.notes.domain.Attachment
 import com.shamilovstas.text_encrypt.notes.domain.EncryptedMessageMalformed
-import com.shamilovstas.text_encrypt.notes.domain.FileEncryptor
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import com.shamilovstas.text_encrypt.notes.domain.NotesInteractor
 import com.shamilovstas.text_encrypt.utils.getFilename
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import javax.crypto.BadPaddingException
 import javax.inject.Inject
-import kotlin.coroutines.suspendCoroutine
 
 @HiltViewModel
 class ComposeNoteViewModel @Inject constructor(
     private val notesInteractor: NotesInteractor,
-    private val fileInteractor: FileInteractor,
-    private val fencryptor: FileEncryptor
+    private val fileInteractor: FileInteractor
 ) : ViewModel() {
 
     private val _effect = MutableSharedFlow<ImportMessageScreenEffect>()
@@ -95,10 +90,14 @@ class ComposeNoteViewModel @Inject constructor(
     }
 
     fun import(fileUri: Uri, contentResolver: ContentResolver)  = viewModelScope.launch {
-        val note = contentResolver.openInputStream(fileUri).use {
-            return@use fileInteractor.import(requireNotNull(it))
+        try {
+            val note = contentResolver.openInputStream(fileUri).use {
+                return@use fileInteractor.import(requireNotNull(it))
+            }
+            _state.update { it.copy(note = note) }
+        } catch (e: UnknownNoteFiletype) {
+            _effect.emit(ImportMessageScreenEffect.UnknownFiletype)
         }
-        _state.update { it.copy(note = note) }
     }
 
     fun setCipherMode(cipherMode: CipherState) {
@@ -124,4 +123,5 @@ sealed class ImportMessageScreenEffect {
     data object NoteSavedMessage : ImportMessageScreenEffect()
     data object WrongPassword : ImportMessageScreenEffect()
     data object MalformedEncryptedMessage : ImportMessageScreenEffect()
+    data object UnknownFiletype: ImportMessageScreenEffect()
 }

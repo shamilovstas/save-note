@@ -2,10 +2,12 @@ package com.shamilovstas.text_encrypt.notes.compose
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
@@ -65,9 +67,7 @@ class ComposeNoteFragment : ToolbarFragment() {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        cleanerObserver.init(this.lifecycle)
+    private fun parseArguments() {
         if (!requireArguments().containsKey(KEY_MODE)) {
             throw IllegalStateException("Mode not provided")
         }
@@ -86,7 +86,10 @@ class ComposeNoteFragment : ToolbarFragment() {
                 viewModel.loadNote(noteId)
             }
         }
-
+    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        cleanerObserver.init(this.lifecycle)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -97,9 +100,11 @@ class ComposeNoteFragment : ToolbarFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
+        parseArguments()
     }
 
     private fun initViews() = with(binding!!) {
+        Log.d("CNF", "init views")
 
         rvAttachments.adapter = attachmentsAdapter
 
@@ -131,7 +136,7 @@ class ComposeNoteFragment : ToolbarFragment() {
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
                 viewModel.effect.collect {
                     effect(it)
                 }
@@ -168,6 +173,16 @@ class ComposeNoteFragment : ToolbarFragment() {
 
             is ImportMessageScreenEffect.MalformedEncryptedMessage -> {
                 Snackbar.make(binding!!.root, R.string.message_malformed, Snackbar.LENGTH_SHORT).show()
+            }
+            is ImportMessageScreenEffect.UnknownFiletype -> {
+                AlertDialog.Builder(requireContext())
+                    .setTitle(R.string.corrupted_file_dialog_title)
+                    .setMessage(R.string.corrupted_file_dialog_message)
+                    .setPositiveButton(R.string.corrupted_file_ok_button) { dialog, _ ->
+                        dialog.dismiss()
+                        findNavController().navigateUp()
+                    }
+                    .create().show()
             }
         }
     }

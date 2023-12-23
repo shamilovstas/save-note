@@ -104,16 +104,21 @@ class ComposeNoteFragment : ToolbarFragment() {
     }
 
     private fun initViews() = with(binding!!) {
-        Log.d("CNF", "init views")
-
         rvAttachments.adapter = attachmentsAdapter
 
         btnAddAttachment.setOnClickListener {
             pickFile.launch(arrayOf("*/*"))
         }
 
-        editText.doAfterTextChanged {
-            btnDecryptNote.isEnabled = !it.isNullOrEmpty()
+        editText.doAfterTextChanged {content ->
+            if (content != null) {
+                viewModel.setNoteContent(content.toString())
+            }
+            btnDecryptNote.isEnabled = !content.isNullOrEmpty()
+        }
+
+        descriptionEditText.doAfterTextChanged {
+            it?.let { viewModel.setNoteDescription(it.toString()) }
         }
 
         btnDecryptNote.setOnClickListener {
@@ -206,6 +211,7 @@ class ComposeNoteFragment : ToolbarFragment() {
         if (state.note.description != descriptionEditText.text?.toString()) {
             descriptionEditText.setText(state.note.description)
         }
+
         attachmentsAdapter.submitList(state.note.attachments)
     }
 

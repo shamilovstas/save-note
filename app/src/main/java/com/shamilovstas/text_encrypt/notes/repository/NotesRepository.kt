@@ -13,7 +13,12 @@ class NotesRepository @Inject constructor(
 
     suspend fun saveNote(note: Note): Note {
         val noteEntity = note.toEntity()
-        val id = notesDao.insertNote(noteEntity)
+        val id = if (noteEntity.id == 0L) {
+            notesDao.insertNote(noteEntity)
+        } else {
+            notesDao.updateNote(noteEntity)
+            noteEntity.id
+        }
 
         val attachments = note.attachments.map { it.copy(noteId = id) }
         return note.copy(id = id, attachments = attachments)

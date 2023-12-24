@@ -25,7 +25,7 @@ class FilesModule {
 
         val cacheDir = context.cacheDir
 
-        val filename = "temp"
+        val filename = "notemediatempdir"
         val dir = File(cacheDir, filename)
         return dir
     }

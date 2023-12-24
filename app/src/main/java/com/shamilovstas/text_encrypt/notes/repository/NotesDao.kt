@@ -14,6 +14,9 @@ abstract class NotesDao {
     @Insert(onConflict = REPLACE)
     abstract suspend fun insertNote(entity: NoteEntity): Long
 
+    @Update
+    abstract suspend fun updateNote(entity: NoteEntity)
+
     @Insert(onConflict = REPLACE)
     abstract suspend fun insertAttachment(attachmentEntity: AttachmentEntity): Long
 

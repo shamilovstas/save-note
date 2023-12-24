@@ -81,10 +81,12 @@ class AttachmentStorageRepository @Inject constructor(
             attachmentsDir = createAttachmentsDir(note)
         }
 
+        attachmentsDir.walkTopDown().drop(1).fold(true) { res, it -> (it.delete() || !it.exists()) && res }
+
         val encryptedUris = mutableListOf<Attachment>()
         for (attachment in note.attachments) {
 
-            val filename = attachment.uri.getFilename(contentResolver)
+            val filename = attachment.filename
             val outputFile = createEncryptedFile(attachmentsDir, filename)
 
             contentResolver.openInputStream(attachment.uri).use { inputStream ->
@@ -103,9 +105,10 @@ class AttachmentStorageRepository @Inject constructor(
     suspend fun decryptAttachments(note: Note, password: String): List<Attachment> {
 
         val encryptedUris = mutableListOf<Attachment>()
+        val baseDir = createAttachmentsTempDir()
         for (attachment in note.attachments) {
             val filename = attachment.uri.getFilename(contentResolver)
-            val outputFile = createDecryptedFile(filename)
+            val outputFile = createDecryptedFile(baseDir, filename)
 
             contentResolver.openInputStream(attachment.uri).use { inputStream ->
                 requireNotNull(inputStream)
@@ -145,7 +148,7 @@ class AttachmentStorageRepository @Inject constructor(
         return outputFile
     }
 
-    private fun createDecryptedFile(encryptedFilename: String): File {
+    private fun createDecryptedFile(baseDir: File, encryptedFilename: String): File {
 
         val parts = encryptedFilename.split(".").dropLast(1)
         var suffix: String? = null
@@ -156,7 +159,7 @@ class AttachmentStorageRepository @Inject constructor(
             suffix = parts.drop(1).joinToString(separator = ".") { it }
         }
 
-        val temp = File.createTempFile(filename, suffix)
+        val temp = File.createTempFile(filename, suffix, baseDir)
         return temp
     }
 }

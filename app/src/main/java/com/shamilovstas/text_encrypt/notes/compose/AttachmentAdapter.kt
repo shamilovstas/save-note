@@ -1,13 +1,11 @@
 package com.shamilovstas.text_encrypt.notes.compose
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import coil.load
 import com.shamilovstas.text_encrypt.R
@@ -49,11 +47,9 @@ class AttachmentAdapter(
         holder.bind(getItem(position))
     }
 
-    class AttachmentViewHolder(val binding: ItemAttachmentBinding) : RecyclerView.ViewHolder(binding.root) {
+    class AttachmentViewHolder(private val binding: ItemAttachmentBinding) : ViewHolder(binding.root) {
 
         fun bind(attachment: Attachment) = with(binding) {
-            Log.d("AttachmentAdapter", "uri: ${attachment.uri.toString()}, name: ${attachment.filename}")
-
             if (attachment.isEncrypted) {
                 binding.attachmentPreview.load(ContextCompat.getDrawable(itemView.context, R.drawable.lock))
             } else {
@@ -61,7 +57,7 @@ class AttachmentAdapter(
                     this.error(R.drawable.file)
                 }
             }
-            binding.attachmentDesc.setText(attachment.filename)
+            binding.attachmentDesc.text = attachment.filename
         }
 
     }

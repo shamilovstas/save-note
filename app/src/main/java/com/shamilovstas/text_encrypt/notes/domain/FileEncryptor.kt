@@ -3,7 +3,6 @@ package com.shamilovstas.text_encrypt.notes.domain
 import java.io.InputStream
 import java.io.OutputStream
 import javax.crypto.Cipher
-import javax.crypto.CipherInputStream
 import javax.crypto.CipherOutputStream
 import javax.crypto.spec.IvParameterSpec
 import javax.inject.Inject
@@ -37,8 +36,7 @@ class FileEncryptor @Inject constructor(
         val ivBuffer = ByteArray(cipher.blockSize)
         inputStream.read(ivBuffer)
 
-        val salt = saltBuffer
-        val key = utils.generateKey(password, salt)
+        val key = utils.generateKey(password, saltBuffer)
         val iv = IvParameterSpec(ivBuffer)
 
         cipher.init(Cipher.DECRYPT_MODE, key, iv)

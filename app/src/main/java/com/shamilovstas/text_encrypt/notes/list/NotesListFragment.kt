@@ -34,7 +34,7 @@ class NotesListFragment : ToolbarFragment() {
         onCopyClickListener = ::onClickCopyNote
     )
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentNoteListBinding.inflate(inflater, container, false)
         return binding!!.root
     }
@@ -57,9 +57,10 @@ class NotesListFragment : ToolbarFragment() {
         viewModel.deleteNote(item)
     }
 
-    val createDocument = registerForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
+    private val createDocument = registerForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
         viewModel.exportNote(uri, requireActivity().contentResolver)
     }
+
     private fun onClickShareNoteItem(item: Note) {
         viewModel.onClickShareNoteItem(item)
     }
@@ -90,13 +91,15 @@ class NotesListFragment : ToolbarFragment() {
         viewModel.loadNotes()
     }
 
-    private fun effect(effect: NotesListEffects) = when(effect) {
+    private fun effect(effect: NotesListEffects) = when (effect) {
         is NotesListEffects.NoteContentCopied -> {
             Snackbar.make(binding!!.root, getString(R.string.message_note_text_copied), Snackbar.LENGTH_SHORT).show()
         }
+
         is NotesListEffects.CreatePublicFile -> {
             createDocument.launch(effect.filename)
         }
+
         is NotesListEffects.NoteExported -> {
             val filename = effect.uri.getFilename(requireActivity().contentResolver)
             Snackbar.make(binding!!.root, getString(R.string.note_exported, filename), Snackbar.LENGTH_LONG)
@@ -116,7 +119,7 @@ class NotesListFragment : ToolbarFragment() {
         findNavController().navigate(R.id.action_from_list_to_compose, ComposeNoteFragment.composeArgs())
     }
 
-    private fun render(state: NotesListScreenState) = with(binding!!) {
+    private fun render(state: NotesListScreenState) {
         adapter.submitList(state.notes)
     }
 }

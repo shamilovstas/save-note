@@ -23,7 +23,7 @@ class ImportDashboardFragment : ToolbarFragment() {
         )
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentImportDashboardBinding.inflate(inflater, container, false)
         return binding!!.root
     }

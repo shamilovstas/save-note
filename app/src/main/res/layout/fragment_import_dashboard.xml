@@ -43,7 +43,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:autoSizeTextType="uniform"
-                    android:text="Read encrypted message using password"
+                    android:text="@string/import_plaintext_title"
                     android:textAlignment="center" />
             </LinearLayout>
 
@@ -74,7 +74,7 @@
                     style="@style/ImportDesciptionTextViewStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Import note from a file" />
+                    android:text="@string/import_file_title" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

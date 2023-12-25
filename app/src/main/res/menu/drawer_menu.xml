@@ -3,10 +3,10 @@
 
     <item
         android:id="@+id/notes_list"
-        android:title="Notes" />
+        android:title="@string/notes_drawer_menu" />
 
     <item
         android:id="@+id/import_dashboard"
-        android:title="Import" />
+        android:title="@string/import_drawer_menu" />
 
 </menu>

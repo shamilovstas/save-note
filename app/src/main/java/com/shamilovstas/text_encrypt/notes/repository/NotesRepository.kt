@@ -29,7 +29,7 @@ class NotesRepository @Inject constructor(
     }
 
     fun getAllNotes(): Flow<List<NoteWithAttachments>> {
-        return notesDao.getAllNotes();
+        return notesDao.getAllNotes()
     }
 
     suspend fun markShared(note: Note) {

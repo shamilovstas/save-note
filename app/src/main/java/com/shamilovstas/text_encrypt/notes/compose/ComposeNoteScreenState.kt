@@ -1,7 +1,6 @@
 package com.shamilovstas.text_encrypt.notes.compose
 
 import com.shamilovstas.text_encrypt.notes.domain.Attachment
-import com.shamilovstas.text_encrypt.notes.domain.Note
 
 data class ComposeNoteScreenState(
     val note: MutableNoteViewState = MutableNoteViewState(content = "", description = ""),

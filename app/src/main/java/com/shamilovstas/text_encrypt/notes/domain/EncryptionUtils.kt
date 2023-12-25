@@ -23,12 +23,11 @@ class EncryptionUtils @Inject constructor() {
         password: String,
         salt: ByteArray
     ): SecretKeySpec {
-        val keyFactory = SecretKeyFactory.getInstance(DIGEST_ALGO);
+        val keyFactory = SecretKeyFactory.getInstance(DIGEST_ALGO)
         val keySpec = PBEKeySpec(password.toCharArray(), salt, 1, 128)
 
         val secret = keyFactory.generateSecret(keySpec)
-        val key = SecretKeySpec(secret.encoded, "AES")
-        return key
+        return SecretKeySpec(secret.encoded, "AES")
     }
 
     fun generateRandom(len: Int): ByteArray {
@@ -46,8 +45,7 @@ class EncryptionUtils @Inject constructor() {
         if (data.isEmpty()) throw IllegalArgumentException("Clear text cannot be empty")
         val cipher = Cipher.getInstance(ALGORITHM)
         cipher.init(Cipher.ENCRYPT_MODE, key, iv)
-        val cipherdata: ByteArray = cipher.doFinal(data)
-        return cipherdata
+        return cipher.doFinal(data)
     }
 }
 

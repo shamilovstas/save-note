@@ -3,7 +3,6 @@ package com.shamilovstas.text_encrypt.notes.compose
 import com.shamilovstas.text_encrypt.notes.domain.Attachment
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import java.time.OffsetDateTime
-import kotlin.math.atan
 
 class MutableNoteViewState(
     var id: Long = 0,

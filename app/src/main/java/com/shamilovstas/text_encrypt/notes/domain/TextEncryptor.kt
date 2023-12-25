@@ -28,8 +28,7 @@ class TextEncryptor @Inject constructor(
 
         val message = salt + iv.iv + ciphertext
 
-        val base64Encoded = Base64.encode(message)
-        return base64Encoded
+        return Base64.encode(message)
     }
 
     @OptIn(ExperimentalEncodingApi::class)

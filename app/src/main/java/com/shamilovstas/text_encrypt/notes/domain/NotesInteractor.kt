@@ -46,17 +46,15 @@ class NotesInteractor @Inject constructor(
         val decryptedContent = encryptor.decrypt(note.content, password)
 
         val attachments = attachmentStorageRepository.decryptAttachments(note, password)
-        val newNote = note.copy(content = decryptedContent, attachments = attachments)
-        return newNote
+        return note.copy(content = decryptedContent, attachments = attachments)
     }
 
     suspend fun getNote(id: Long): Note {
         val noteEntity = repository.getNoteById(id)
-        val note = noteEntity.toModel()
-        return note
+        return noteEntity.toModel()
     }
 
-    suspend fun getAllNotes(): Flow<List<Note>> {
+    fun getAllNotes(): Flow<List<Note>> {
         return repository.getAllNotes()
             .map { it.map { it.toModel() } }
     }

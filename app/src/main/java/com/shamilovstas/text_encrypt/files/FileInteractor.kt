@@ -7,6 +7,9 @@ import com.shamilovstas.text_encrypt.notes.domain.Attachment
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import com.shamilovstas.text_encrypt.notes.repository.AttachmentStorageRepository
 import com.shamilovstas.text_encrypt.notes.repository.AttachmentStorageRepository.Companion.FILENAME_FROM_DATE_FORMATTER
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -32,7 +35,6 @@ class FileInteractor @Inject constructor(
 ) {
 
     companion object {
-        private const val TAG = "FileInteractor"
         const val NOTE_FILE_EXTENSION = "encn"
         private const val CONTENTS_FILE = "__contents__"
     }
@@ -119,32 +121,37 @@ class FileInteractor @Inject constructor(
     }
 
     suspend fun import(inputStream: InputStream) : Note {
-        val zipInputStream = ZipInputStream(inputStream)
+        return coroutineScope {
+            val zipInputStream = ZipInputStream(inputStream)
 
-        var zipEntry: ZipEntry? = zipInputStream.nextEntry
+            var note: Note? = null
+            val attachments: MutableList<Attachment> = mutableListOf()
 
-        var note: Note? = null
-        val attachments: MutableList<Attachment> = mutableListOf()
+            val tempMediaDir = attachmentStorageRepository.createAttachmentsTempDir()
 
-        val tempMediaDir = attachmentStorageRepository.createAttachmentsTempDir()
-        while (zipEntry != null) {
-            if (zipEntry.name == CONTENTS_FILE) {
-                note = importNoteContents(zipInputStream)
-            } else {
-                val attachment = importAttachment(zipEntry, zipInputStream, tempMediaDir)
-                attachments.add(attachment)
+            withContext(Dispatchers.IO) {
+                var zipEntry: ZipEntry? = zipInputStream.nextEntry
+
+                while (zipEntry != null) {
+                    if (zipEntry.name == CONTENTS_FILE) {
+                        note = importNoteContents(zipInputStream)
+                    } else {
+                        val attachment = importAttachment(zipEntry, zipInputStream, tempMediaDir)
+                        attachments.add(attachment)
+                    }
+                    zipEntry = zipInputStream.nextEntry
+                }
+
+                zipInputStream.close()
             }
-            zipEntry = zipInputStream.nextEntry
+
+            if (note == null) {
+                throw UnknownNoteFiletype()
+            }
+
+            val importedNote = requireNotNull(note).copy(attachments = attachments)
+            return@coroutineScope importedNote
         }
-
-        zipInputStream.close()
-
-        if (note == null) {
-            throw UnknownNoteFiletype()
-        }
-
-        val importedNote = requireNotNull(note).copy(attachments = attachments)
-        return importedNote
     }
 
     private fun importAttachment(zipEntry: ZipEntry, zipInputStream: ZipInputStream, tempMediaDir: File): Attachment {
@@ -156,8 +163,7 @@ class FileInteractor @Inject constructor(
         fileOutputStream.use {
             zipInputStream.copyTo(it)
         }
-        val attachment = Attachment(noteId = 0, uri = Uri.fromFile(file), filename = name, isEncrypted = true)
-        return attachment
+        return Attachment(noteId = 0, uri = Uri.fromFile(file), filename = name, isEncrypted = true)
     }
 
     private fun importNoteContents(zipInputStream: ZipInputStream): Note {
@@ -179,7 +185,11 @@ class FileInteractor @Inject constructor(
         val descriptionBuffer = ByteArray(descriptionLength)
         zipInputStream.read(descriptionBuffer)
         val description = descriptionBuffer.toString(Charsets.UTF_8)
-        val note = Note(content = content, description = description, createdDate = OffsetDateTime.from(Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault())))
+        val note = Note(
+            content = content,
+            description = description,
+            createdDate = OffsetDateTime.from(Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()))
+        )
         return note
     }
 

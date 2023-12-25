@@ -9,11 +9,9 @@ import com.shamilovstas.text_encrypt.notes.domain.FileEncryptor
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import com.shamilovstas.text_encrypt.utils.createUniqueFile
 import com.shamilovstas.text_encrypt.utils.digest
-import com.shamilovstas.text_encrypt.utils.getFilename
 import kotlinx.coroutines.coroutineScope
 import java.io.File
 import java.io.FileOutputStream
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -47,7 +45,7 @@ class AttachmentStorageRepository @Inject constructor(
         }
     }
 
-    suspend fun createNoteDir(baseDir: File, note: Note): File {
+    private suspend fun createNoteDir(baseDir: File, note: Note): File {
         val dir = createUniqueFile(baseDir) { digest(TEMP_DIR_NAME_LENGTH) }
 
         val dirname = dir.name
@@ -60,11 +58,11 @@ class AttachmentStorageRepository @Inject constructor(
         return dir
     }
 
-    suspend fun createAttachmentsDir(note: Note): File {
+    private suspend fun createAttachmentsDir(note: Note): File {
         return createNoteDir(baseDir, note)
     }
 
-    suspend fun createAttachmentsTempDir(): File {
+    fun createAttachmentsTempDir(): File {
         val dir = createUniqueFile(cacheDir) { digest(TEMP_DIR_NAME_LENGTH) }
 
         if (!dir.mkdirs()) {
@@ -123,12 +121,12 @@ class AttachmentStorageRepository @Inject constructor(
     private fun deleteExistingFiles(dir: File) {
         dir.walkTopDown().drop(1).fold(true) { res, it -> (it.delete() || !it.exists()) && res }
     }
-    suspend fun getAttachmentDir(note: Note): File? {
+
+    private suspend fun getAttachmentDir(note: Note): File? {
         val attachmentStorageEntity =
             attachmentStorageDao.findAttachmentStorageForNote(note.id) ?: return null
 
-        val dir = File(baseDir, attachmentStorageEntity.relativePath)
-        return dir
+        return File(baseDir, attachmentStorageEntity.relativePath)
     }
 
     private fun createEncryptedFile(baseDir: File, originalFilename: String): File {

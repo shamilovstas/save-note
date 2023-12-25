@@ -38,6 +38,10 @@ class NotesInteractor @Inject constructor(
         return encryptedNote.copy(attachments = attachments)
     }
 
+    suspend fun markShared(note: Note) {
+        repository.markShared(note)
+    }
+
     suspend fun decrypt(note: Note, password: String): Note {
         val decryptedContent = encryptor.decrypt(note.content, password)
 

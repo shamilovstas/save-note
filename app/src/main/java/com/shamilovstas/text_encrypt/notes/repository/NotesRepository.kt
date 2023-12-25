@@ -32,6 +32,11 @@ class NotesRepository @Inject constructor(
         return notesDao.getAllNotes();
     }
 
+    suspend fun markShared(note: Note) {
+        val noteEntity = note.copy(isPublished = true).toEntity()
+        notesDao.updateNote(noteEntity)
+    }
+
     suspend fun deleteNote(note: Note) {
         attachmentStorageRepository.deleteAttachments(note)
         val entity = note.toEntity()

@@ -20,6 +20,7 @@ import java.util.zip.ZipInputStream
 import java.util.zip.ZipOutputStream
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.coroutines.suspendCoroutine
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
 
@@ -37,14 +38,17 @@ class FileInteractor @Inject constructor(
     }
 
     @WorkerThread
-    fun export(note: Note, outputStream: OutputStream) {
-        val zipOutputStream = ZipOutputStream(outputStream)
-        exportNoteContent(note, zipOutputStream)
+    suspend fun export(note: Note, outputStream: OutputStream) {
+        suspendCoroutine {
+            val zipOutputStream = ZipOutputStream(outputStream)
+            exportNoteContent(note, zipOutputStream)
 
-        for (attachment in note.attachments) {
-            exportAttachment(attachment, zipOutputStream)
+            for (attachment in note.attachments) {
+                exportAttachment(attachment, zipOutputStream)
+            }
+            zipOutputStream.close()
+            it.resumeWith(Result.success(Unit))
         }
-        zipOutputStream.close()
     }
 
     fun getUniqueFilename(original: String, existingFilenames: Set<String>): String {

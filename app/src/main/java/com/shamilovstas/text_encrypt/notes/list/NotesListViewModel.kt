@@ -69,7 +69,7 @@ class NotesListViewModel @Inject constructor(
             contentResolver.openOutputStream(requireNotNull(uri)).use { outputStream ->
                 if (outputStream == null) throw IllegalStateException("Couldn't write to file")
                 exportInteractor.export(note, outputStream)
-
+                notesInteractor.markShared(note)
                 withContext(Dispatchers.Main) {
                     _effects.emit(NotesListEffects.NoteExported(uri))
                 }
@@ -82,7 +82,6 @@ class NotesListViewModel @Inject constructor(
         savedStateHandle[NOTE_EXPORT_KEY] = item.id
         _effects.emit(NotesListEffects.CreatePublicFile(filename))
     }
-
 }
 
 data class NotesListScreenState(

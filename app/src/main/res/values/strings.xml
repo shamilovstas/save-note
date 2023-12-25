@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Text-encrypt</string>
+    <string name="app_name">Secure notes</string>
     <string name="enter_password">Password</string>
     <string name="confirm_password">Confirm password</string>
     <string name="title_enter_password">Enter password</string>

@@ -207,12 +207,14 @@ class ComposeNoteFragment : ToolbarFragment() {
             }
             is ImportMessageScreenEffect.DownloadedAttachment -> {
                 Snackbar.make(binding!!.root, getString(R.string.attachment_saved, effect.filename), Snackbar.LENGTH_LONG)
-                    .setAction(R.string.action_open_attachment) {
-                        val intent = Intent()
-                        intent.setDataAndType(effect.uri, "image/*")
-                        intent.action = Intent.ACTION_VIEW
-                        startActivity(Intent.createChooser(intent, getString(R.string.dialog_title_open_with)))
-                    }.show()
+//                    .setAction(R.string.action_open_attachment) {
+//                        val intent = Intent()
+//                        intent.setDataAndType(effect.uri, "image/*")
+//                        intent.action = Intent.ACTION_VIEW
+//                        startActivity(Intent.createChooser(intent, getString(R.string.dialog_title_open_with)))
+//                    }
+                    .show()
+
             }
         }
     }

@@ -34,7 +34,7 @@ class FileInteractor @Inject constructor(
     companion object {
         private const val TAG = "FileInteractor"
         const val NOTE_FILE_EXTENSION = "encn"
-        private const val CONTENTS_FILE = "contents"
+        private const val CONTENTS_FILE = "__contents__"
     }
 
     @WorkerThread
@@ -43,7 +43,9 @@ class FileInteractor @Inject constructor(
             val zipOutputStream = ZipOutputStream(outputStream)
             exportNoteContent(note, zipOutputStream)
 
-            for (attachment in note.attachments) {
+            val sanitizedAttachments = sanitizeAttachments(note)
+
+            for (attachment in sanitizedAttachments) {
                 exportAttachment(attachment, zipOutputStream)
             }
             zipOutputStream.close()
@@ -51,10 +53,23 @@ class FileInteractor @Inject constructor(
         }
     }
 
+    private fun sanitizeAttachments(note: Note): List<Attachment> {
+        val sanitizedAttachments = note.attachments.toMutableList()
+        val hasContentsFilename = sanitizedAttachments.find { it.filename == CONTENTS_FILE }
+        if (hasContentsFilename != null) {
+            sanitizedAttachments.remove(hasContentsFilename)
+            val sanitizedFilename = "_${hasContentsFilename.filename}"
+            val uniqueSanitizedFilename = getUniqueFilename(sanitizedFilename, sanitizedAttachments.map { it.filename }.toSet())
+            val renamedAttachment = hasContentsFilename.copy(filename = uniqueSanitizedFilename)
+            sanitizedAttachments.add(renamedAttachment)
+        }
+        return sanitizedAttachments
+    }
+
     fun getUniqueFilename(original: String, existingFilenames: Set<String>): String {
         val filenameParts = original.split('.')
         val basename = filenameParts.first()
-        val extension = filenameParts.drop(1).joinToString(separator = ".") { it }
+        val originalExtension = filenameParts.drop(1).joinToString(separator = ".") { it }
         var index = 0
 
         var newFilename: String
@@ -62,7 +77,12 @@ class FileInteractor @Inject constructor(
             newFilename = if (index == 0) {
                 original
             } else {
-                "${basename}($index).$extension"
+                val extension = if (originalExtension.isNotEmpty()) {
+                    ".$originalExtension"
+                } else {
+                    ""
+                }
+                "${basename}($index)$extension"
             }
             index ++
         } while (existingFilenames.contains(newFilename))
@@ -71,7 +91,7 @@ class FileInteractor @Inject constructor(
     }
 
     private fun exportAttachment(attachment: Attachment, zipOutputStream: ZipOutputStream) {
-        val zipEntry = ZipEntry(attachment.filename) // TODO handle name collision with 'contents' file
+        val zipEntry = ZipEntry(attachment.filename)
         zipOutputStream.putNextEntry(zipEntry)
         contentResolver.openInputStream(attachment.uri).use {
             requireNotNull(it).copyTo(zipOutputStream)

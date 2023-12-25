@@ -13,7 +13,6 @@ import javax.inject.Singleton
 class EncryptionUtils @Inject constructor() {
     companion object {
         const val ALGORITHM = "AES/CBC/PKCS5Padding"
-        const val ALGORITHM2 = "AES/CBC/NoPadding"
         const val MIN_BLOCK_SIZE = 16
         const val DIGEST_ALGO = "PBKDF2WithHmacSHA256"
     }

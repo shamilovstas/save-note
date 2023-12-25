@@ -82,12 +82,14 @@ class FileInteractor @Inject constructor(
         val millis = note.createdDate?.toInstant()?.toEpochMilli() ?: 0L
         val messageDecoded = Base64.decode(note.content)
 
-        val messageSize = Long.SIZE_BYTES + Int.SIZE_BYTES + messageDecoded.size
+        val messageSize = Long.SIZE_BYTES + Int.SIZE_BYTES + messageDecoded.size + Int.SIZE_BYTES + note.description.length
         val byteBuffer = ByteBuffer.allocate(messageSize)
 
         byteBuffer.putLong(millis)
         byteBuffer.putInt(messageDecoded.size)
         byteBuffer.put(messageDecoded)
+        byteBuffer.putInt(note.description.length)
+        byteBuffer.put(note.description.toByteArray(Charsets.UTF_8))
         zipOutputStream.write(byteBuffer.array())
         zipOutputStream.closeEntry()
     }
@@ -135,17 +137,25 @@ class FileInteractor @Inject constructor(
     }
 
     private fun importNoteContents(zipInputStream: ZipInputStream): Note {
-        val dateByteData = ByteArray(Long.SIZE_BYTES)
-        zipInputStream.read(dateByteData)
-        val dateByteArray=  ByteBuffer.wrap(dateByteData)
+        val dateBuffer = ByteArray(Long.SIZE_BYTES)
+        zipInputStream.read(dateBuffer)
+        val dateByteArray=  ByteBuffer.wrap(dateBuffer)
         val millis = dateByteArray.getLong()
-        val array = ByteArray(Int.SIZE_BYTES)
-        zipInputStream.read(array)
-        val size = ByteBuffer.wrap(array).getInt()
-        val messageByteArray = ByteArray(size)
+
+        val noteLengthBuffer = ByteArray(Int.SIZE_BYTES)
+        zipInputStream.read(noteLengthBuffer)
+        val noteLength = ByteBuffer.wrap(noteLengthBuffer).getInt()
+        val messageByteArray = ByteArray(noteLength)
         zipInputStream.read(messageByteArray)
         val content = Base64.encode(messageByteArray)
-        val note = Note(content = content, createdDate = OffsetDateTime.from(Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault())))
+
+        val descriptionLengthBuffer = ByteArray(Int.SIZE_BYTES)
+        zipInputStream.read(descriptionLengthBuffer)
+        val descriptionLength = ByteBuffer.wrap(descriptionLengthBuffer).getInt()
+        val descriptionBuffer = ByteArray(descriptionLength)
+        zipInputStream.read(descriptionBuffer)
+        val description = descriptionBuffer.toString(Charsets.UTF_8)
+        val note = Note(content = content, description = description, createdDate = OffsetDateTime.from(Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault())))
         return note
     }
 

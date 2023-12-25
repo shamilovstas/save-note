@@ -13,8 +13,6 @@ fun Uri.getFilename(contentResolver: ContentResolver): String {
     if (this.scheme == "file") {
         val lastIndex = this.path!!.lastIndexOf("/")
         filename = this.path?.substring(lastIndex + 1) ?: ""
-
-        //TODO remove
     } else {
         contentResolver.query(this, null, null, null, null)?.use { cursor ->
             val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)

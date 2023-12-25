@@ -123,7 +123,11 @@ class ComposeNoteViewModel @Inject constructor(
 
     fun addAttachment(uri: Uri, contentResolver: ContentResolver) {
         val note = state.value.note
-        val attachment = Attachment(noteId = note.id, uri = uri, filename = uri.getFilename(contentResolver))
+        val filename = fileInteractor.getUniqueFilename(
+            uri.getFilename(contentResolver),
+            note.attachments.map { it.filename }.toSet()
+        )
+        val attachment = Attachment(noteId = note.id, uri = uri, filename = filename)
         note.attachments = note.attachments + attachment // ListAdapter wants a new list
         _state.update { it.copy(note = note) }
     }

@@ -1,5 +1,6 @@
 package com.shamilovstas.text_encrypt.utils
 
+import android.util.Log
 import java.io.File
 
 

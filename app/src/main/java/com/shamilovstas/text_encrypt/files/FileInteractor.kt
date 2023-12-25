@@ -48,6 +48,25 @@ class FileInteractor @Inject constructor(
         zipOutputStream.close()
     }
 
+    fun getUniqueFilename(original: String, existingFilenames: Set<String>): String {
+        val filenameParts = original.split('.')
+        val basename = filenameParts.first()
+        val extension = filenameParts.drop(1).joinToString(separator = ".") { it }
+        var index = 0
+
+        var newFilename: String
+        do {
+            newFilename = if (index == 0) {
+                original
+            } else {
+                "${basename}($index).$extension"
+            }
+            index ++
+        } while (existingFilenames.contains(newFilename))
+
+        return newFilename
+    }
+
     private fun exportAttachment(attachment: Attachment, zipOutputStream: ZipOutputStream) {
         val zipEntry = ZipEntry(attachment.filename) // TODO handle name collision with 'contents' file
         zipOutputStream.putNextEntry(zipEntry)

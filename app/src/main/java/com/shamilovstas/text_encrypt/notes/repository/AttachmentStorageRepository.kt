@@ -81,7 +81,7 @@ class AttachmentStorageRepository @Inject constructor(
             attachmentsDir = createAttachmentsDir(note)
         }
 
-        attachmentsDir.walkTopDown().drop(1).fold(true) { res, it -> (it.delete() || !it.exists()) && res }
+        deleteExistingFiles(attachmentsDir)
 
         val encryptedUris = mutableListOf<Attachment>()
         for (attachment in note.attachments) {
@@ -122,6 +122,9 @@ class AttachmentStorageRepository @Inject constructor(
         return encryptedUris
     }
 
+    private fun deleteExistingFiles(dir: File) {
+        dir.walkTopDown().drop(1).fold(true) { res, it -> (it.delete() || !it.exists()) && res }
+    }
     suspend fun getAttachmentDir(note: Note): File? {
         val attachmentStorageEntity =
             attachmentStorageDao.findAttachmentStorageForNote(note.id) ?: return null
@@ -131,21 +134,7 @@ class AttachmentStorageRepository @Inject constructor(
     }
 
     private fun createEncryptedFile(baseDir: File, originalFilename: String): File {
-        val filenameParts = originalFilename.split('.')
-        val basename = filenameParts.first()
-        val extension = filenameParts.drop(1).joinToString(separator = ".") { it }
-        val dateTime = LocalDateTime.now()
-        var filename = "${FILENAME_FROM_DATE_FORMATTER.format(dateTime)}_${originalFilename}.encf"
-        var outputFile = File(baseDir, filename)
-
-        var index = 0
-        while (!outputFile.createNewFile()) {
-            index++
-            filename = "${FILENAME_FROM_DATE_FORMATTER.format(dateTime)}_${basename}($index).$extension.enfc"
-            outputFile = File(baseDir, filename)
-        }
-
-        return outputFile
+        return File(baseDir, "$originalFilename.encf")
     }
 
     private fun createDecryptedFile(baseDir: File, encryptedFilename: String): File {

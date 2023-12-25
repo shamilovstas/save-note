@@ -48,9 +48,9 @@ class AttachmentStorageRepository @Inject constructor(
     }
 
     suspend fun createNoteDir(baseDir: File, note: Note): File {
-        val dirname = digest(TEMP_DIR_NAME_LENGTH)
-        val dir = createUniqueFile(baseDir, dirname)
+        val dir = createUniqueFile(baseDir) { digest(TEMP_DIR_NAME_LENGTH) }
 
+        val dirname = dir.name
         if (!dir.mkdirs()) {
             throw IllegalStateException("Couldn't create directory with name ${dir.path}")
         }
@@ -65,9 +65,7 @@ class AttachmentStorageRepository @Inject constructor(
     }
 
     suspend fun createAttachmentsTempDir(): File {
-        val dirname = digest(TEMP_DIR_NAME_LENGTH)
-
-        val dir = createUniqueFile(cacheDir, dirname)
+        val dir = createUniqueFile(cacheDir) { digest(TEMP_DIR_NAME_LENGTH) }
 
         if (!dir.mkdirs()) {
             throw IllegalStateException("Couldn't create temp directory with name ${dir.path}")
@@ -107,8 +105,8 @@ class AttachmentStorageRepository @Inject constructor(
         val encryptedUris = mutableListOf<Attachment>()
         val baseDir = createAttachmentsTempDir()
         for (attachment in note.attachments) {
-            val filename = attachment.uri.getFilename(contentResolver)
-            val outputFile = createDecryptedFile(baseDir, filename)
+            val filename = attachment.filename
+            val outputFile = File(baseDir, filename)
 
             contentResolver.openInputStream(attachment.uri).use { inputStream ->
                 requireNotNull(inputStream)
@@ -135,20 +133,5 @@ class AttachmentStorageRepository @Inject constructor(
 
     private fun createEncryptedFile(baseDir: File, originalFilename: String): File {
         return File(baseDir, "$originalFilename.encf")
-    }
-
-    private fun createDecryptedFile(baseDir: File, encryptedFilename: String): File {
-
-        val parts = encryptedFilename.split(".").dropLast(1)
-        var suffix: String? = null
-
-        val filename = parts.first()
-
-        if (parts.size > 1) {
-            suffix = parts.drop(1).joinToString(separator = ".") { it }
-        }
-
-        val temp = File.createTempFile(filename, suffix, baseDir)
-        return temp
     }
 }

@@ -7,7 +7,6 @@ import com.shamilovstas.text_encrypt.notes.domain.Attachment
 import com.shamilovstas.text_encrypt.notes.domain.Note
 import com.shamilovstas.text_encrypt.notes.repository.AttachmentStorageRepository
 import com.shamilovstas.text_encrypt.notes.repository.AttachmentStorageRepository.Companion.FILENAME_FROM_DATE_FORMATTER
-import com.shamilovstas.text_encrypt.utils.createUniqueFile
 import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
@@ -125,7 +124,7 @@ class FileInteractor @Inject constructor(
     private fun importAttachment(zipEntry: ZipEntry, zipInputStream: ZipInputStream, tempMediaDir: File): Attachment {
 
         val name = zipEntry.name
-        val file = createUniqueFile(tempMediaDir, name)
+        val file = File(tempMediaDir, name)
 
         val fileOutputStream = FileOutputStream(file)
         fileOutputStream.use {

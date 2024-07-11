@@ -9,18 +9,22 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import com.shamilovstas.text_encrypt.base.AggregatedFragmentFactory
 import com.shamilovstas.text_encrypt.base.AppBarConfigurationProvider
 import com.shamilovstas.text_encrypt.notes.compose.ComposeNoteFragment
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), AppBarConfigurationProvider {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+    @Inject lateinit var fragmentFactory: AggregatedFragmentFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        supportFragmentManager.fragmentFactory = fragmentFactory
         setContentView(R.layout.activity_main)
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_container) as NavHostFragment

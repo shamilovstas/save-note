@@ -21,9 +21,16 @@ android {
     }
 
     buildTypes {
-        release {
+        debug {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
+        }
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
         }
     }
     compileOptions {
@@ -41,18 +48,35 @@ android {
         correctErrorTypes true
     }
 
+    packaging {
+        resources {
+            it.excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            it.merges += "META-INF/LICENSE.md"
+            it.merges += "META-INF/LICENSE-notice.md"
+        }
+    }
+
+    testOptions {
+        packagingOptions {
+            jniLibs {
+                useLegacyPackaging = true
+            }
+        }
+    }
 }
 
 dependencies {
 
     def room_version = "2.6.1"
     def nav_version = "2.7.5"
+    def lifecycle_version = "2.6.2"
+    def fragment_version = "1.8.1"
+    def mockk_version = "1.13.11"
 
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
-    def lifecycle_version = "2.6.2"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
     implementation("io.coil-kt:coil:2.5.0")
@@ -70,6 +94,10 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "androidx.fragment:fragment-ktx:1.6.2"
     testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation "io.mockk:mockk-android:${mockk_version}"
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    debugImplementation("androidx.fragment:fragment-testing-manifest:$fragment_version")
+    androidTestImplementation("androidx.fragment:fragment-testing:$fragment_version")
+
 }

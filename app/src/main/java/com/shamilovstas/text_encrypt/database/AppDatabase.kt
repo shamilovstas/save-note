@@ -1,5 +1,6 @@
 package com.shamilovstas.text_encrypt.database
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -15,7 +16,11 @@ import com.shamilovstas.text_encrypt.notes.repository.NotesDao
         NoteEntity::class,
         AttachmentEntity::class,
         AttachmentStorageEntity::class
-    ], version = 1
+    ],
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2)
+    ],
+    version = 2
 )
 @TypeConverters(
     value = [

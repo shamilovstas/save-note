@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.databinding.ItemNoteBinding
-import com.shamilovstas.text_encrypt.notes.DATE_FORMATTER
+import com.shamilovstas.text_encrypt.notes.MEDIUM_DATE_FORMATTER
 import com.shamilovstas.text_encrypt.notes.domain.Note
 
 class NotesAdapter(
@@ -79,7 +79,7 @@ class NotesAdapter(
     class NoteViewHolder(private val binding: ItemNoteBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(note: Note) {
-            binding.noteCreateDate.text = DATE_FORMATTER.format(note.createdDate)
+            binding.noteCreateDate.text = MEDIUM_DATE_FORMATTER.format(note.createdDate)
             binding.encryptedContent.text = note.content
             val publishedIconRes = if (note.isPublished) {
                 R.drawable.cloud_done

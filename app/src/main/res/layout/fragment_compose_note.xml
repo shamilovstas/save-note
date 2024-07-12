@@ -30,7 +30,7 @@
             android:layout_height="match_parent">
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/til_edit_text"
+                android:id="@+id/til_note_title"
                 style="@style/Widget.Material3.TextInputLayout.FilledBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -40,11 +40,40 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_text"
+                    android:id="@+id/et_note_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top|start"
+                    android:hint="@string/note_title_hint" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/note_create_date"
+                android:layout_width="wrap_content"
+                android:layout_margin="8dp"
+                android:layout_height="match_parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/til_note_title"
+                tools:text="19.05.2021" />
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_note_content"
+                style="@style/Widget.Material3.TextInputLayout.FilledBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/note_create_date">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_note_content"
                     style="@style/EncryptedMessageEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="top|start"
+                    android:minHeight="350dp"
                     tools:hint="@string/import_content_hint" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -58,7 +87,7 @@
                 app:helperText="@string/optional_field"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/til_edit_text">
+                app:layout_constraintTop_toBottomOf="@id/til_note_content">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/description_edit_text"
@@ -75,7 +104,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="til_edit_text, til_description_text" />
+                app:constraint_referenced_ids="til_note_content, til_description_text" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_attachments"
@@ -84,9 +113,9 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:orientation="horizontal"
-                app:layout_constraintStart_toEndOf="@id/btn_add_attachment"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btn_add_attachment"
                 app:layout_constraintTop_toBottomOf="@id/compose_note_mains"
                 tools:listitem="@layout/item_attachment" />
 
@@ -97,10 +126,10 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:src="@drawable/baseline_add_24"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/rv_attachments"
                 app:layout_constraintEnd_toStartOf="@id/rv_attachments"
-                app:layout_constraintTop_toTopOf="@id/rv_attachments"
-                app:layout_constraintBottom_toBottomOf="@id/rv_attachments" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/rv_attachments" />
 
             <androidx.constraintlayout.widget.Barrier
                 android:id="@+id/compose_note_attachments"
@@ -108,7 +137,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:barrierDirection="bottom"
-                app:constraint_referenced_ids="rv_attachments, til_edit_text, til_description_text" />
+                app:constraint_referenced_ids="rv_attachments, til_note_content, til_description_text" />
 
             <Button
                 android:id="@+id/btn_decrypt_note"

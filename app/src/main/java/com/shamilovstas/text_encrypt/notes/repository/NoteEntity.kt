@@ -13,6 +13,9 @@ data class NoteEntity(
     @ColumnInfo(name = "content", typeAffinity = ColumnInfo.TEXT)
     val content: String,
 
+    @ColumnInfo(name = "title", typeAffinity = ColumnInfo.TEXT, defaultValue = "")
+    val title: String,
+
     @ColumnInfo(name = "is_published")
     val isPublished: Boolean,
 

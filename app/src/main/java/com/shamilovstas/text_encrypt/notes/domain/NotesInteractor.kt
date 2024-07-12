@@ -21,14 +21,18 @@ class NotesInteractor @Inject constructor(
             throw ClearTextIsEmpty()
         }
 
+        var title = note.title
         var content = note.content
         var attachments = note.attachments
         val date = note.createdDate ?: OffsetDateTime.now()
 
         if (password != null) {
+            if (title.isNotEmpty()) {
+                title = encryptor.encrypt(title, password)
+            }
             content = encryptor.encrypt(note.content, password)
         }
-        val encryptedNote = repository.saveNote(note.copy(content = content, createdDate = date))
+        val encryptedNote = repository.saveNote(note.copy(title = title, content = content, createdDate = date))
 
         if (password != null) {
             attachments = attachmentStorageRepository.encryptNoteAttachments(encryptedNote, password)
@@ -43,10 +47,14 @@ class NotesInteractor @Inject constructor(
     }
 
     suspend fun decrypt(note: Note, password: String): Note {
+        var title = note.title
+        if (note.title.isNotEmpty()) {
+            title = encryptor.decrypt(title, password)
+        }
         val decryptedContent = encryptor.decrypt(note.content, password)
 
         val attachments = attachmentStorageRepository.decryptAttachments(note, password)
-        return note.copy(content = decryptedContent, attachments = attachments)
+        return note.copy(title = title, content = decryptedContent, attachments = attachments)
     }
 
     suspend fun getNote(id: Long): Note {

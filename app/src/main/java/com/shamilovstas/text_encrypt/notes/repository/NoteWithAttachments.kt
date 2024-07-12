@@ -15,6 +15,7 @@ fun NoteWithAttachments.toModel(): Note {
     return Note(
         id = note.id,
         content = note.content,
+        title = note.title,
         isPublished = note.isPublished,
         createdDate = note.createdDate,
         description = note.description,

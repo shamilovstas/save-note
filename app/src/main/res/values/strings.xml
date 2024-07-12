@@ -38,4 +38,5 @@
     <string name="import_drawer_menu">Import</string>
     <string name="import_plaintext_title">Read encrypted message using password</string>
     <string name="import_file_title">Import note from a file</string>
+    <string name="note_title_hint">Title note</string>
 </resources>

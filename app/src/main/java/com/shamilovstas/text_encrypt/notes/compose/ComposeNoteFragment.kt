@@ -19,6 +19,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.shamilovstas.text_encrypt.R
 import com.shamilovstas.text_encrypt.base.ToolbarFragment
 import com.shamilovstas.text_encrypt.databinding.FragmentComposeNoteBinding
+import com.shamilovstas.text_encrypt.notes.SHORT_DATE_FORMATTER
 import com.shamilovstas.text_encrypt.notes.compose.password.PasswordDialogBuilder
 import com.shamilovstas.text_encrypt.notes.domain.Attachment
 import com.shamilovstas.text_encrypt.notes.domain.CleanerLifecycleObserver
@@ -34,6 +35,7 @@ class ComposeNoteFragment : ToolbarFragment() {
     private val attachmentsAdapter = AttachmentAdapter(
         onAttachmentClick = ::onAttachmentClicked
     )
+
     @Inject
     lateinit var cleanerObserver: CleanerLifecycleObserver
 
@@ -127,7 +129,11 @@ class ComposeNoteFragment : ToolbarFragment() {
             pickFile.launch(arrayOf("*/*"))
         }
 
-        editText.doAfterTextChanged {
+        etNoteTitle.doAfterTextChanged {
+            it?.let { viewModel.setTitle(it.toString()) }
+        }
+
+        etNoteContent.doAfterTextChanged {
             btnDecryptNote.isEnabled = !it.isNullOrEmpty()
             it?.let { viewModel.setContent(it.toString()) }
         }
@@ -137,13 +143,13 @@ class ComposeNoteFragment : ToolbarFragment() {
         }
 
         btnDecryptNote.setOnClickListener {
-            val encryptedContent = editText.text?.toString()
+            val encryptedContent = etNoteContent.text?.toString()
             viewModel.decryptNote(encryptedContent)
         }
 
         btnSaveImportedNote.setOnClickListener {
             val description = descriptionEditText.text?.toString() ?: ""
-            viewModel.saveNote(editText.text?.toString() ?: "", description = description)
+            viewModel.saveNote(etNoteContent.text?.toString() ?: "", description = description)
         }
 
 
@@ -225,17 +231,29 @@ class ComposeNoteFragment : ToolbarFragment() {
         if (state.cipherState == CipherState.Encrypted) {
             btnDecryptNote.visibility = View.VISIBLE
             btnSaveImportedNote.visibility = View.GONE
-            tilEditText.hint = getString(R.string.import_content_hint)
+            tilNoteContent.hint = getString(R.string.import_content_hint)
         } else {
             btnDecryptNote.visibility = View.GONE
             btnSaveImportedNote.visibility = View.VISIBLE
-            tilEditText.hint = getString(R.string.enter_message)
+            tilNoteContent.hint = getString(R.string.enter_message)
             tilDescriptionText.visibility = View.VISIBLE
         }
 
-        if (state.note.content != editText.text?.toString()) {
-            editText.setText(state.note.content)
+        if (state.note.content != etNoteContent.text?.toString()) {
+            etNoteContent.setText(state.note.content)
         }
+
+        if (state.note.title != etNoteTitle.text?.toString()) {
+            etNoteTitle.setText(state.note.title)
+        }
+
+        if (state.note.createdDate == null) {
+            noteCreateDate.isVisible = false
+        } else {
+            noteCreateDate.isVisible = true
+            noteCreateDate.text = SHORT_DATE_FORMATTER.format(state.note.createdDate)
+        }
+
         if (state.note.description != descriptionEditText.text?.toString()) {
             descriptionEditText.setText(state.note.description)
         }

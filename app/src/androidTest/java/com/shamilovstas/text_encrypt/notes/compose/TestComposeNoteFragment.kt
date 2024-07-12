@@ -24,7 +24,7 @@ class TestComposeNoteFragment {
         launchFragmentInHiltContainer<ComposeNoteFragment>(ComposeNoteFragment.composeArgs())
         val expectedContent = "Hello world"
         val expectedDescription = "Description"
-        val contextEditTextMatcher = onView(withId(R.id.edit_text))
+        val contextEditTextMatcher = onView(withId(R.id.et_note_content))
         val descriptionEditTextMatcher = onView(withId(R.id.description_edit_text))
         contextEditTextMatcher.perform(typeText(expectedContent))
         descriptionEditTextMatcher.perform(typeText(expectedDescription))

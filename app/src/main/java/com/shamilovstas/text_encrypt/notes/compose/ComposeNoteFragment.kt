@@ -125,15 +125,8 @@ class ComposeNoteFragment : ToolbarFragment() {
             pickFile.launch(arrayOf("*/*"))
         }
 
-        editText.doAfterTextChanged {content ->
-            if (content != null) {
-                viewModel.setNoteContent(content.toString())
-            }
-            btnDecryptNote.isEnabled = !content.isNullOrEmpty()
-        }
-
-        descriptionEditText.doAfterTextChanged {
-            it?.let { viewModel.setNoteDescription(it.toString()) }
+        editText.doAfterTextChanged {
+            btnDecryptNote.isEnabled = !it.isNullOrEmpty()
         }
 
         btnDecryptNote.setOnClickListener {
@@ -237,7 +230,6 @@ class ComposeNoteFragment : ToolbarFragment() {
         if (state.note.description != descriptionEditText.text?.toString()) {
             descriptionEditText.setText(state.note.description)
         }
-
         attachmentsAdapter.submitList(state.note.attachments)
     }
 

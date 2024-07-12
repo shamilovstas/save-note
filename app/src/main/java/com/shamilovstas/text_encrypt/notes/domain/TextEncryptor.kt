@@ -1,5 +1,6 @@
 package com.shamilovstas.text_encrypt.notes.domain
 
+import com.shamilovstas.text_encrypt.notes.domain.exception.PasswordIsEmpty
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.inject.Inject
@@ -16,7 +17,8 @@ class TextEncryptor @Inject constructor(
 
     @OptIn(ExperimentalEncodingApi::class)
     fun encrypt(data: String, password: String): String {
-        if (data.isEmpty()) throw IllegalArgumentException("Clear text cannot be empty")
+        if (data.isEmpty()) throw ClearTextIsEmpty()
+        if (password.isEmpty()) throw PasswordIsEmpty()
         val cipher = utils.cipher
         val salt = utils.generateRandom(cipher.blockSize)
         val key = utils.generateKey(password, salt)

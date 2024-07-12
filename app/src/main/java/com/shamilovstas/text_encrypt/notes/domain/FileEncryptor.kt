@@ -1,5 +1,6 @@
 package com.shamilovstas.text_encrypt.notes.domain
 
+import com.shamilovstas.text_encrypt.notes.domain.exception.PasswordIsEmpty
 import java.io.InputStream
 import java.io.OutputStream
 import javax.crypto.Cipher
@@ -15,6 +16,9 @@ class FileEncryptor @Inject constructor(
 
     fun encrypt(inputStream: InputStream, outputStream: OutputStream, password: String) {
 
+        if (password.isEmpty()) {
+            throw PasswordIsEmpty()
+        }
         val cipher = utils.cipher
         val salt = utils.generateRandom(cipher.blockSize)
         val key = utils.generateKey(password, salt)

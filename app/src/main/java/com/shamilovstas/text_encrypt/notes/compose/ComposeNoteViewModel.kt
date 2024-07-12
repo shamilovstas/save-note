@@ -141,6 +141,14 @@ class ComposeNoteViewModel @Inject constructor(
         _state.update { it.copy(downloadedAttachment = null) }
         _effect.emit(ImportMessageScreenEffect.DownloadedAttachment(uri, attachment.filename))
     }
+
+    fun setContent(content: String) {
+        _state.update { it.copy(note = it.note.copy(content = content)) }
+    }
+
+    fun setDescription(description: String) {
+        _state.update { it.copy(note = it.note.copy(description = description)) }
+    }
 }
 
 sealed class ImportMessageScreenEffect {

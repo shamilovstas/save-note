@@ -34,14 +34,15 @@ class ComposeNoteFragment : ToolbarFragment() {
     private val attachmentsAdapter = AttachmentAdapter(
         onAttachmentClick = ::onAttachmentClicked
     )
-    @Inject lateinit var cleanerObserver: CleanerLifecycleObserver
+    @Inject
+    lateinit var cleanerObserver: CleanerLifecycleObserver
 
-    private val pickFile = registerForActivityResult(ActivityResultContracts.OpenDocument()) {uri ->
+    private val pickFile = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri == null) return@registerForActivityResult
         viewModel.addAttachment(uri, requireActivity().contentResolver)
     }
 
-    private val saveFile = registerForActivityResult(ActivityResultContracts.CreateDocument("image/*")) {uri ->
+    private val saveFile = registerForActivityResult(ActivityResultContracts.CreateDocument("image/*")) { uri ->
         if (uri == null) return@registerForActivityResult
         viewModel.saveAttachment(uri, requireActivity().contentResolver)
     }
@@ -102,6 +103,7 @@ class ComposeNoteFragment : ToolbarFragment() {
             }
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         cleanerObserver.init(this.lifecycle)
@@ -127,6 +129,11 @@ class ComposeNoteFragment : ToolbarFragment() {
 
         editText.doAfterTextChanged {
             btnDecryptNote.isEnabled = !it.isNullOrEmpty()
+            it?.let { viewModel.setContent(it.toString()) }
+        }
+
+        descriptionEditText.doAfterTextChanged {
+            it?.let { viewModel.setDescription(it.toString()) }
         }
 
         btnDecryptNote.setOnClickListener {
@@ -187,6 +194,7 @@ class ComposeNoteFragment : ToolbarFragment() {
             is ImportMessageScreenEffect.MalformedEncryptedMessage -> {
                 Snackbar.make(binding!!.root, R.string.message_malformed, Snackbar.LENGTH_SHORT).show()
             }
+
             is ImportMessageScreenEffect.UnknownFiletype -> {
                 AlertDialog.Builder(requireContext())
                     .setTitle(R.string.corrupted_file_dialog_title)
@@ -197,6 +205,7 @@ class ComposeNoteFragment : ToolbarFragment() {
                     }
                     .create().show()
             }
+
             is ImportMessageScreenEffect.DownloadedAttachment -> {
                 Snackbar.make(binding!!.root, getString(R.string.attachment_saved, effect.filename), Snackbar.LENGTH_LONG)
 //                    .setAction(R.string.action_open_attachment) {

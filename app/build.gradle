@@ -4,6 +4,7 @@ plugins {
     id 'com.google.dagger.hilt.android'
     id 'kotlin-kapt'
     id 'androidx.room'
+    id 'jacoco'
 }
 
 android {
@@ -25,6 +26,8 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             testProguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguardTest-rules.pro'
+            enableUnitTestCoverage true
+            enableAndroidTestCoverage true
         }
         release {
             minifyEnabled true
@@ -72,6 +75,32 @@ android {
     }
 }
 
+tasks.register('jacocoReport', JacocoReport) {
+    dependsOn 'testDebugUnitTest'
+    reports {
+        csv { enabled false } // change if needed
+        xml { enabled false } // change if needed
+        html {
+            enabled true
+            destination file("${buildDir}/coverage-report")
+        }
+    }
+
+    // Setup the .class, source, and execution directories
+    final fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', 'android/**/*.*']
+
+    // Include this if you use Kotlin
+    final kotlinTree = fileTree(dir: "${project.buildDir}/tmp/kotlin-classes/debug", excludes: fileFilter)
+    final javacTree = fileTree(dir: "${project.buildDir}/intermediates/javac/debug", excludes: fileFilter)
+    final mainSrc = "${project.projectDir}/src/main/java"
+
+    sourceDirectories.setFrom files([mainSrc])
+    classDirectories.setFrom files([kotlinTree, javacTree])
+    executionData.setFrom fileTree(dir: project.buildDir, includes: [
+            '**/*.exec', '**/*.ec'
+    ])
+}
+
 dependencies {
 
     def room_version = "2.6.1"
@@ -114,6 +143,4 @@ dependencies {
     debugImplementation("androidx.fragment:fragment-testing-manifest:$fragment_version")
     androidTestImplementation("androidx.fragment:fragment-testing:$fragment_version")
     androidTestImplementation 'androidx.test.espresso:espresso-device:1.0.1'
-
-
 }

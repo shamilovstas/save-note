@@ -1,6 +1,7 @@
 package com.shamilovstas.text_encrypt.notes.compose
 
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.scrollTo
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.device.DeviceInteraction.Companion.setScreenOrientation
@@ -27,6 +28,7 @@ class TestComposeNoteFragment {
         val contextEditTextMatcher = onView(withId(R.id.et_note_content))
         val descriptionEditTextMatcher = onView(withId(R.id.description_edit_text))
         contextEditTextMatcher.perform(typeText(expectedContent))
+        descriptionEditTextMatcher.perform(scrollTo())
         descriptionEditTextMatcher.perform(typeText(expectedDescription))
         onDevice().setScreenOrientation(ScreenOrientation.LANDSCAPE)
         contextEditTextMatcher.check(matches(withText(expectedContent)))
